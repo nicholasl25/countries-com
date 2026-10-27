@@ -218,7 +218,7 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        <p>Mock data for now — the answer is each territory’s geographic center, not yet population-weighted.</p>
+        <p>Population data: GHS-POP 2025, European Commission JRC (CC BY 4.0).</p>
       </footer>
     </div>
   )

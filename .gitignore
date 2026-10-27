@@ -22,3 +22,5 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 agent-tools/
+# Raw population raster (large; fetch with npm run data:fetch)
+data/raw/
