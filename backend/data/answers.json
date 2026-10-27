@@ -1,0 +1,53 @@
+{
+  "source": "GHS-POP E2025 R2023A, 30 arc-second (JRC, CC BY 4.0)",
+  "answers": {
+    "us-colorado": {
+      "lat": 39.5238,
+      "lon": -105.196,
+      "population": 6019612,
+      "area_km2": 268948
+    },
+    "us-texas": {
+      "lat": 30.8382,
+      "lon": -97.3207,
+      "population": 30888455,
+      "area_km2": 688668
+    },
+    "us-california": {
+      "lat": 35.4968,
+      "lon": -119.3101,
+      "population": 41157135,
+      "area_km2": 409701
+    },
+    "poland": {
+      "lat": 51.7577,
+      "lon": 19.3177,
+      "population": 39682631,
+      "area_km2": 312554
+    },
+    "germany": {
+      "lat": 50.8336,
+      "lon": 9.6537,
+      "population": 83100949,
+      "area_km2": 356148
+    },
+    "egypt": {
+      "lat": 29.5292,
+      "lon": 31.2749,
+      "population": 113936036,
+      "area_km2": 1003474
+    },
+    "brazil": {
+      "lat": -16.9653,
+      "lon": -45.7891,
+      "population": 212130447,
+      "area_km2": 8499478
+    },
+    "india": {
+      "lat": 22.6602,
+      "lon": 80.0992,
+      "population": 1444156800,
+      "area_km2": 3155884
+    }
+  }
+}

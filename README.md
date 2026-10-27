@@ -8,12 +8,13 @@ Territories are real borders from [`us-atlas`](https://github.com/topojson/us-at
 
 ```bash
 npm install
+npm run setup:api   # one-time: creates backend/.venv and installs Python deps
 npm run dev
 ```
 
-Open [http://127.0.0.1:4317](http://127.0.0.1:4317). `npm run dev` starts both the Vite frontend (port 4317) and the API server (port 8787); Vite proxies `/api` to the API.
+Open [http://127.0.0.1:4317](http://127.0.0.1:4317). `npm run dev` starts both the Vite frontend (port 4317) and the Python API (FastAPI on port 8787); Vite proxies `/api` to the API. Interactive API docs are at [http://127.0.0.1:8787/docs](http://127.0.0.1:8787/docs).
 
-The precomputed answers are committed in `server/data/answers.json`, so you don't need the population data to play.
+The precomputed answers are committed in `backend/data/answers.json`, so you don't need the population data to play.
 
 ### Scripts
 
@@ -21,10 +22,9 @@ The precomputed answers are committed in `server/data/answers.json`, so you don'
 | ------------------- | ------------ |
 | `npm run dev`       | Frontend + API with reload |
 | `npm run dev:web`   | Frontend only |
-| `npm run dev:api`   | API only |
-| `npm run start:api` | API without file watching |
-| `npm run data:fetch`| Download + unzip the GHS-POP raster into `data/raw/` (~480 MB zip, gitignored) |
-| `npm run data:com`  | Recompute `server/data/answers.json` from the raster (~20 s) |
+| `npm run dev:api`   | API only (uvicorn with reload) |
+| `npm run setup:api` | Create `backend/.venv` and install `backend/requirements.txt` |
+| `npm run data:com`  | Recompute `backend/data/answers.json` (downloads the ~480 MB GHS-POP raster into `backend/data/raw/` on first run; gitignored) |
 | `npm run build`     | Typecheck + production build of the frontend |
 
 ## How it fits together
@@ -34,10 +34,10 @@ src/            frontend (never sees population data or answers up front)
   api/types.ts  the API contract shared with the server
   api/http.ts   fetch client
   geo.ts        lat/lon <-> SVG projection for one territory
-server/
-  territories.ts  playable territories + their borders
-  compute-com.ts  offline: raster -> data/answers.json
-  index.ts        HTTP API
+backend/        Python
+  territories.py  playable territories + their borders (TopoJSON in data/borders/)
+  compute_com.py  offline: population raster -> data/answers.json
+  main.py         FastAPI app
 ```
 
 API (all lat/lon; errors return `{ "error": "message" }`):
@@ -49,8 +49,8 @@ Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other 
 
 ### How the center of mass is computed
 
-Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. To add a territory, add it to `TERRITORIES` in `server/territories.ts` and rerun `npm run data:com`.
+Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. To add a territory, add it to `TERRITORIES` in `backend/territories.py` and rerun `npm run data:com`. Borders come from the `us-atlas` / `world-atlas` npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
 
 ## Stack
 
-Vite · React · TypeScript · plain CSS. SVG map drawn with `d3-geo`. API is a plain Node HTTP server run with `tsx` — no framework, auth, or database.
+Vite · React · TypeScript · plain CSS. SVG map drawn with `d3-geo`. Backend: Python · FastAPI · numpy · rasterio. No auth or database.

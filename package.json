@@ -4,12 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n web,api -c blue,green \"vite\" \"tsx watch server/index.ts\"",
+    "dev": "concurrently -k -n web,api -c blue,green \"npm:dev:web\" \"npm:dev:api\"",
     "dev:web": "vite",
-    "dev:api": "tsx watch server/index.ts",
-    "start:api": "tsx server/index.ts",
-    "data:fetch": "mkdir -p data/raw && curl -L --fail -o data/raw/ghs_pop_2025_30ss.zip https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/GHS_POP_GLOBE_R2023A/GHS_POP_E2025_GLOBE_R2023A_4326_30ss/V1-0/GHS_POP_E2025_GLOBE_R2023A_4326_30ss_V1_0.zip && unzip -o data/raw/ghs_pop_2025_30ss.zip -d data/raw",
-    "data:com": "tsx server/compute-com.ts",
+    "dev:api": "cd backend && .venv/bin/uvicorn main:app --reload --port 8787",
+    "setup:api": "python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt",
+    "data:com": "cd backend && .venv/bin/python compute_com.py",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -17,10 +16,7 @@
   "dependencies": {
     "d3-geo": "^3.1.1",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "topojson-client": "^3.1.0",
-    "us-atlas": "^3.0.1",
-    "world-atlas": "^2.0.2"
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@types/d3-geo": "^3.1.1",
@@ -28,13 +24,9 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@types/topojson-client": "^3.1.5",
-    "@types/topojson-specification": "^1.0.5",
     "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.6",
-    "geotiff": "^3.0.5",
     "oxlint": "^1.88.0",
-    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vite": "^8.3.4"
   }

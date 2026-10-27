@@ -22,5 +22,7 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 agent-tools/
-# Raw population raster (large; fetch with npm run data:fetch)
-data/raw/
+# Backend: virtualenv, caches, and the raw population raster (downloaded by compute_com.py)
+backend/.venv/
+__pycache__/
+backend/data/raw/
