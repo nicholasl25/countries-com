@@ -1,3 +1,5 @@
+import type { Feature, MultiPolygon, Polygon } from 'geojson'
+
 /**
  * The contract between the frontend and the backend.
  *
@@ -5,37 +7,38 @@
  * implement these shapes (see `http.ts` for the routes); until then `mock.ts`
  * implements them in the browser.
  *
- * Note the true center of mass is NOT part of `Territory` — it only comes back
- * from `submitGuess`, so the answer is never shipped to the client up front.
+ * All locations are geographic (lat/lon). Projecting onto the screen is purely
+ * a frontend concern, and computing the answer is purely a backend concern —
+ * the true center of mass only comes back from `submitGuess`.
  */
 
-/** A point in the territory's `viewBox` coordinate space. */
-export type Point = { x: number; y: number }
+/** A geographic location in degrees. */
+export type LatLon = { lat: number; lon: number }
+
+/** GeoJSON outline of a territory (lon/lat coordinates, RFC 7946). */
+export type TerritoryShape = Feature<Polygon | MultiPolygon>
 
 export type Territory = {
   id: string
   name: string
   region: string
-  /** SVG viewBox, e.g. "0 0 480 360" */
-  viewBox: string
-  /** Closed SVG path in viewBox units */
-  path: string
+  shape: TerritoryShape
 }
 
 export type GuessResult = {
-  /** The true population-weighted center of mass, in viewBox units */
-  trueCom: Point
-  /** Distance between the guess and the true CoM */
+  /** The true population-weighted center of mass */
+  trueCom: LatLon
+  /** Great-circle distance between the guess and the true CoM */
   distanceKm: number
-  /** 0–1000, computed by the backend */
+  /** 0–1000 */
   score: number
 }
 
 export interface GameApi {
-  /** Fetch the territory to play. */
+  /** Fetch a territory to play. */
   getTerritory(): Promise<Territory>
   /** Submit a guess for a territory and get the scored result. */
-  submitGuess(territoryId: string, guess: Point): Promise<GuessResult>
+  submitGuess(territoryId: string, guess: LatLon): Promise<GuessResult>
 }
 
 export class ApiError extends Error {

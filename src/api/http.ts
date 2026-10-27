@@ -2,7 +2,7 @@ import {
   ApiError,
   type GameApi,
   type GuessResult,
-  type Point,
+  type LatLon,
   type Territory,
 } from './types'
 
@@ -10,9 +10,9 @@ import {
  * HTTP implementation of `GameApi`. Routes the backend needs to provide
  * (all JSON, relative to `baseUrl`):
  *
- *   GET  /territory  -> Territory
+ *   GET  /territory  -> Territory (with GeoJSON `shape`)
  *   POST /guess      -> GuessResult
- *        body: { territoryId: string, guess: Point }
+ *        body: { territoryId: string, guess: { lat, lon } }
  *
  * Non-2xx responses may include `{ "error": "message" }`.
  */
@@ -39,7 +39,7 @@ export function createHttpApi(baseUrl: string): GameApi {
 
   return {
     getTerritory: () => request<Territory>('/territory'),
-    submitGuess: (territoryId: string, guess: Point) =>
+    submitGuess: (territoryId: string, guess: LatLon) =>
       request<GuessResult>('/guess', {
         method: 'POST',
         body: JSON.stringify({ territoryId, guess }),

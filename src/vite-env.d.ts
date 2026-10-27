@@ -8,3 +8,13 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+declare module 'us-atlas/states-10m.json' {
+  const topology: import('topojson-specification').Topology
+  export default topology
+}
+
+declare module 'world-atlas/countries-50m.json' {
+  const topology: import('topojson-specification').Topology
+  export default topology
+}

@@ -1,18 +1,20 @@
-import { useEffect, useId, useState, type MouseEvent } from 'react'
-import { api, type GuessResult, type Point, type Territory } from './api'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { api, type GuessResult, type LatLon, type Territory } from './api'
+import { createMapProjection, MAP_HEIGHT, MAP_WIDTH } from './geo'
 import './styles.css'
 
 type Phase = 'loading' | 'ready' | 'submitting' | 'scored' | 'error'
 
 export default function App() {
-  const clipId = useId().replace(/:/g, '')
   const [phase, setPhase] = useState<Phase>('loading')
   const [territory, setTerritory] = useState<Territory | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [guess, setGuess] = useState<Point | null>(null)
+  const [guess, setGuess] = useState<LatLon | null>(null)
   const [result, setResult] = useState<GuessResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [outsideHint, setOutsideHint] = useState(false)
+
+  const map = useMemo(() => (territory ? createMapProjection(territory.shape) : null), [territory])
 
   function fetchTerritory() {
     setPhase('loading')
@@ -48,10 +50,8 @@ export default function App() {
     const ctm = svg.getScreenCTM()
     if (!ctm) return
     const local = pt.matrixTransform(ctm.inverse())
-    const point = { x: local.x, y: local.y }
-
-    const pathEl = svg.querySelector('path.territory') as SVGGeometryElement | null
-    if (pathEl && !pathEl.isPointInFill(point)) {
+    const point = map?.toLatLon(local.x, local.y)
+    if (!point) {
       setOutsideHint(true)
       return
     }
@@ -80,6 +80,8 @@ export default function App() {
     setPhase('ready')
   }
 
+  const guessXY = guess && map ? map.toXY(guess) : null
+  const comXY = result && map ? map.toXY(result.trueCom) : null
   const km = result?.distanceKm ?? null
   const score = result?.score ?? null
 
@@ -120,71 +122,50 @@ export default function App() {
             </div>
           )}
 
-          {territory && (phase === 'ready' || phase === 'submitting' || phase === 'scored') && (
+          {territory && map && (phase === 'ready' || phase === 'submitting' || phase === 'scored') && (
             <svg
               className="map"
-              viewBox={territory.viewBox}
+              viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
               role="img"
               aria-label={`Map of ${territory.name}. Click to place your guess.`}
               onClick={onMapClick}
             >
-              <defs>
-                <clipPath id={`land-${clipId}`}>
-                  <path d={territory.path} />
-                </clipPath>
-              </defs>
-
               <rect
                 className="map-frame"
                 x="0"
                 y="0"
-                width="480"
-                height="360"
+                width={MAP_WIDTH}
+                height={MAP_HEIGHT}
               />
 
-              <g clipPath={`url(#land-${clipId})`}>
-                <rect className="land-fill" x="0" y="0" width="480" height="360" />
-                <g className="hatch" aria-hidden="true">
-                  {Array.from({ length: 28 }, (_, i) => (
-                    <line
-                      key={i}
-                      x1={i * 22}
-                      y1="0"
-                      x2={i * 22 - 80}
-                      y2="360"
-                    />
-                  ))}
-                </g>
-              </g>
+              <path className="territory" d={map.path} />
 
-              <path className="territory" d={territory.path} />
-
-              {guess && (
+              {guessXY && (
                 <g className="pin pin-guess">
-                  <circle cx={guess.x} cy={guess.y} r="10" className="pin-ring" />
-                  <circle cx={guess.x} cy={guess.y} r="4.5" className="pin-core guess" />
+                  <circle cx={guessXY.x} cy={guessXY.y} r="10" className="pin-ring" />
+                  <circle cx={guessXY.x} cy={guessXY.y} r="4.5" className="pin-core guess" />
                 </g>
               )}
 
-              {phase === 'scored' && territory && guess && result && (
+              {phase === 'scored' && guessXY && comXY && (
                 <>
                   <line
                     className="com-link"
-                    x1={guess.x}
-                    y1={guess.y}
-                    x2={result.trueCom.x}
-                    y2={result.trueCom.y}
+                    x1={guessXY.x}
+                    y1={guessXY.y}
+                    x2={comXY.x}
+                    y2={comXY.y}
                   />
                   <g className="pin pin-com">
                     <circle
-                      cx={result.trueCom.x}
-                      cy={result.trueCom.y}
+                      cx={comXY.x}
+                      cy={comXY.y}
                       r="12"
                       className="pin-ring com"
                     />
                     <circle
-                      cx={result.trueCom.x}
-                      cy={result.trueCom.y}
+                      cx={comXY.x}
+                      cy={comXY.y}
                       r="5"
                       className="pin-core com"
                     />
@@ -223,16 +204,21 @@ export default function App() {
                 {km < 1 ? 'Less than 1 km' : `${km.toFixed(0)} km`} from the true{' '}
                 <span className="nowrap">center of mass (CoM)</span>
               </p>
-              <button type="button" className="btn" onClick={playAgain}>
-                Guess again
-              </button>
+              <div className="actions">
+                <button type="button" className="btn" onClick={playAgain}>
+                  Guess again
+                </button>
+                <button type="button" className="btn" onClick={() => fetchTerritory()}>
+                  Next territory
+                </button>
+              </div>
             </div>
           )}
         </div>
       </main>
 
       <footer className="foot">
-        <p>Mock data for now — one fixed territory, no live population feed.</p>
+        <p>Mock data for now — the answer is each territory’s geographic center, not yet population-weighted.</p>
       </footer>
     </div>
   )

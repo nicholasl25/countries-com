@@ -133,16 +133,8 @@ button {
   fill: #fff;
 }
 
-.land-fill {
-  fill: var(--land);
-}
-
-.hatch {
-  display: none;
-}
-
 .territory {
-  fill: transparent;
+  fill: var(--land);
   stroke: var(--land-stroke);
   stroke-width: 2.25;
   vector-effect: non-scaling-stroke;
@@ -282,6 +274,12 @@ button {
 
 .nowrap {
   white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
 }
 
 .distance {
