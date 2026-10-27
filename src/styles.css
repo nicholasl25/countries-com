@@ -1,14 +1,14 @@
 :root {
-  --ink: #18222d;
-  --ink-soft: #4a5868;
-  --paper: #edf2f4;
-  --mist: #d5e0e6;
-  --land: #b7c9d2;
-  --land-stroke: #243040;
-  --accent: #c26a2d;
-  --com: #1f6b5c;
-  --frame: #cfd9e0;
-  --danger: #8b3a2f;
+  --ink: #000;
+  --ink-soft: #555;
+  --paper: #fff;
+  --mist: #f2f2f2;
+  --land: #1d5fd1;
+  --land-stroke: #000;
+  --accent: #ff4d1a;
+  --com: #ff4d1a;
+  --frame: #fff;
+  --danger: #c01818;
   --font-brand: 'Fraunces', 'Times New Roman', serif;
   --font-body: 'Figtree', 'Segoe UI', sans-serif;
   color-scheme: light;
@@ -52,21 +52,7 @@ button {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background:
-    radial-gradient(ellipse 80% 55% at 50% -10%, #f7fafb 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 100% 80%, #c9d9d4 0%, transparent 50%),
-    radial-gradient(ellipse 45% 35% at 0% 70%, #c2d0dc 0%, transparent 45%),
-    linear-gradient(165deg, #e8eef2 0%, #edf2f4 45%, #e2eae6 100%);
-}
-
-.atmosphere::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.35;
-  background-image: radial-gradient(var(--ink-soft) 0.6px, transparent 0.7px);
-  background-size: 14px 14px;
-  mask-image: radial-gradient(circle at 50% 40%, #000 20%, transparent 75%);
+  background: #fff;
 }
 
 .mast,
@@ -84,7 +70,8 @@ button {
 .brand {
   margin: 0;
   font-family: var(--font-brand);
-  font-size: clamp(2.4rem, 7vw, 4.25rem);
+  font-size: clamp(1.1rem, 5vw, 2.75rem);
+  white-space: nowrap;
   font-weight: 550;
   letter-spacing: -0.03em;
   line-height: 0.95;
@@ -124,8 +111,8 @@ button {
   width: 100%;
   aspect-ratio: 480 / 360;
   max-height: min(58dvh, 520px);
-  border: 1px solid color-mix(in srgb, var(--land-stroke) 18%, transparent);
-  background: color-mix(in srgb, white 55%, var(--mist));
+  border: 2px solid #000;
+  background: #fff;
   position: relative;
 }
 
@@ -143,16 +130,15 @@ button {
 }
 
 .map-frame {
-  fill: color-mix(in srgb, white 40%, var(--mist));
+  fill: #fff;
 }
 
 .land-fill {
   fill: var(--land);
 }
 
-.hatch line {
-  stroke: color-mix(in srgb, var(--land-stroke) 12%, transparent);
-  stroke-width: 1;
+.hatch {
+  display: none;
 }
 
 .territory {
@@ -164,9 +150,9 @@ button {
 
 .pin-ring {
   fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.5;
-  opacity: 0.55;
+  stroke: #fff;
+  stroke-width: 2;
+  opacity: 0.9;
 }
 
 .pin-ring.com {
@@ -174,16 +160,17 @@ button {
 }
 
 .pin-core {
-  stroke: #fff;
-  stroke-width: 1.25;
+  stroke: #0b1f4d;
+  stroke-width: 1.5;
 }
 
 .pin-core.guess {
-  fill: var(--accent);
+  fill: #fff;
 }
 
 .pin-core.com {
   fill: var(--com);
+  stroke: #fff;
 }
 
 .pin-guess {
@@ -198,8 +185,8 @@ button {
 }
 
 .com-link {
-  stroke: color-mix(in srgb, var(--ink) 45%, transparent);
-  stroke-width: 1.5;
+  stroke: #fff;
+  stroke-width: 2;
   stroke-dasharray: 6 5;
   fill: none;
   animation: draw-link 560ms ease-out both;
@@ -228,9 +215,9 @@ button {
   margin: 0 auto 1rem;
   background: linear-gradient(
     100deg,
-    var(--mist) 20%,
-    #eef3f6 40%,
-    var(--mist) 60%
+    #e6e6e6 20%,
+    #fafafa 40%,
+    #e6e6e6 60%
   );
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
@@ -291,6 +278,10 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.75rem;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .distance {

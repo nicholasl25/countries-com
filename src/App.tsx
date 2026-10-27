@@ -1,14 +1,8 @@
 import { useEffect, useId, useState, type MouseEvent } from 'react'
-import {
-  distanceKm,
-  loadTerritory,
-  scoreGuess,
-  type Point,
-  type Territory,
-} from './data'
+import { api, type GuessResult, type Point, type Territory } from './api'
 import './styles.css'
 
-type Phase = 'loading' | 'ready' | 'scored' | 'error'
+type Phase = 'loading' | 'ready' | 'submitting' | 'scored' | 'error'
 
 export default function App() {
   const clipId = useId().replace(/:/g, '')
@@ -16,15 +10,20 @@ export default function App() {
   const [territory, setTerritory] = useState<Territory | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [guess, setGuess] = useState<Point | null>(null)
+  const [result, setResult] = useState<GuessResult | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [outsideHint, setOutsideHint] = useState(false)
 
-  function fetchTerritory(retry = false) {
+  function fetchTerritory() {
     setPhase('loading')
     setError(null)
     setGuess(null)
+    setResult(null)
+    setSubmitError(null)
     setOutsideHint(false)
     setTerritory(null)
-    loadTerritory({ ignoreFailParam: retry })
+    api
+      .getTerritory()
       .then((t) => {
         setTerritory(t)
         setPhase('ready')
@@ -58,21 +57,31 @@ export default function App() {
     }
 
     setOutsideHint(false)
+    setSubmitError(null)
     setGuess(point)
-    setPhase('scored')
+    setPhase('submitting')
+    api
+      .submitGuess(territory.id, point)
+      .then((r) => {
+        setResult(r)
+        setPhase('scored')
+      })
+      .catch((err: unknown) => {
+        setGuess(null)
+        setSubmitError(err instanceof Error ? err.message : 'Could not submit your guess.')
+        setPhase('ready')
+      })
   }
 
   function playAgain() {
     setGuess(null)
+    setResult(null)
     setOutsideHint(false)
     setPhase('ready')
   }
 
-  const km =
-    territory && guess
-      ? distanceKm(guess, territory.trueCom, territory.kmPerUnit)
-      : null
-  const score = km === null ? null : scoreGuess(km)
+  const km = result?.distanceKm ?? null
+  const score = result?.score ?? null
 
   return (
     <div className="page">
@@ -80,16 +89,15 @@ export default function App() {
 
       <header className="mast rise">
         <p className="brand">
-          Countries<span className="brand-dot">.</span>COM
+          Countries<span className="brand-dot">.</span>CoM (Center of Mass)
         </p>
-        <p className="tag">Center of Mass</p>
       </header>
 
       <main className="stage">
         <p className="instruction rise delay">
           {phase === 'scored'
-            ? 'Your guess versus the true population center of mass.'
-            : 'Click the map where you think the population center of mass sits.'}
+            ? <>Your guess versus the true population <span className="nowrap">center of mass (CoM)</span>.</>
+            : <>Click the map where you think the population <span className="nowrap">center of mass (CoM)</span> sits.</>}
         </p>
 
         <div
@@ -106,13 +114,13 @@ export default function App() {
             <div className="state" role="alert">
               <p className="state-title">Couldn’t load the map</p>
               <p className="state-body">{error}</p>
-              <button type="button" className="btn" onClick={() => fetchTerritory(true)}>
+              <button type="button" className="btn" onClick={() => fetchTerritory()}>
                 Try again
               </button>
             </div>
           )}
 
-          {territory && (phase === 'ready' || phase === 'scored') && (
+          {territory && (phase === 'ready' || phase === 'submitting' || phase === 'scored') && (
             <svg
               className="map"
               viewBox={territory.viewBox}
@@ -158,25 +166,25 @@ export default function App() {
                 </g>
               )}
 
-              {phase === 'scored' && territory && guess && (
+              {phase === 'scored' && territory && guess && result && (
                 <>
                   <line
                     className="com-link"
                     x1={guess.x}
                     y1={guess.y}
-                    x2={territory.trueCom.x}
-                    y2={territory.trueCom.y}
+                    x2={result.trueCom.x}
+                    y2={result.trueCom.y}
                   />
                   <g className="pin pin-com">
                     <circle
-                      cx={territory.trueCom.x}
-                      cy={territory.trueCom.y}
+                      cx={result.trueCom.x}
+                      cy={result.trueCom.y}
                       r="12"
                       className="pin-ring com"
                     />
                     <circle
-                      cx={territory.trueCom.x}
-                      cy={territory.trueCom.y}
+                      cx={result.trueCom.x}
+                      cy={result.trueCom.y}
                       r="5"
                       className="pin-core com"
                     />
@@ -199,6 +207,12 @@ export default function App() {
             <p className="hint">Click inside the territory outline.</p>
           )}
 
+          {submitError && phase === 'ready' && (
+            <p className="hint" role="alert">
+              {submitError}
+            </p>
+          )}
+
           {phase === 'scored' && score !== null && km !== null && (
             <div className="result">
               <p className="score">
@@ -206,8 +220,8 @@ export default function App() {
                 <span className="score-label">points</span>
               </p>
               <p className="distance">
-                {km < 1 ? 'Less than 1 km' : `${km.toFixed(0)} km`} from the true
-                COM
+                {km < 1 ? 'Less than 1 km' : `${km.toFixed(0)} km`} from the true{' '}
+                <span className="nowrap">center of mass (CoM)</span>
               </p>
               <button type="button" className="btn" onClick={playAgain}>
                 Guess again
