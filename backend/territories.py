@@ -22,19 +22,32 @@ SOURCES = {
 class Territory:
     id: str
     name: str
-    region: str
     source: str  # key of SOURCES
+    continent: str
 
+    @property
+    def region(self) -> str:
+        """Subtitle shown under the name."""
+        return "United States" if self.source == "states" else self.continent
+
+    @property
+    def categories(self) -> list[str]:
+        """Catalog groups this territory appears in."""
+        return ["US States" if self.source == "states" else "Countries", self.continent]
+
+
+# Order catalog groups are listed in.
+CATEGORIES = ["Countries", "US States", "Africa", "Asia", "Europe", "North America", "Oceania", "South America"]
 
 TERRITORIES = [
-    Territory("us-colorado", "Colorado", "United States", "states"),
-    Territory("us-texas", "Texas", "United States", "states"),
-    Territory("us-california", "California", "United States", "states"),
-    Territory("poland", "Poland", "Europe", "countries"),
-    Territory("germany", "Germany", "Europe", "countries"),
-    Territory("egypt", "Egypt", "Africa", "countries"),
-    Territory("brazil", "Brazil", "South America", "countries"),
-    Territory("india", "India", "Asia", "countries"),
+    Territory("us-colorado", "Colorado", "states", "North America"),
+    Territory("us-texas", "Texas", "states", "North America"),
+    Territory("us-california", "California", "states", "North America"),
+    Territory("poland", "Poland", "countries", "Europe"),
+    Territory("germany", "Germany", "countries", "Europe"),
+    Territory("egypt", "Egypt", "countries", "Africa"),
+    Territory("brazil", "Brazil", "countries", "South America"),
+    Territory("india", "India", "countries", "Asia"),
 ]
 
 TERRITORIES_BY_ID = {t.id: t for t in TERRITORIES}

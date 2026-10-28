@@ -1,10 +1,13 @@
 """Game API. Implements the contract in `src/api/types.ts`:
 
-    GET  /api/territory -> Territory
-    POST /api/guess     -> GuessResult   body: { territoryId, guess: { lat, lon } }
+    GET  /api/territory[?id=]   -> Territory (random unless `id` is given)
+    POST /api/guess             -> GuessResult   body: { territoryId, guess: { lat, lon } }
+    GET  /api/catalog           -> Catalog       list of territories by category
+    GET  /api/catalog/{id}      -> CatalogDetail territory + answer + heat map
 
-Answers and density grids come from `data/` (see `compute_com.py`) and only
-ever leave the server as part of a guess result.
+Answers and density grids come from `data/` (see `compute_com.py`). In the game
+they only leave the server as part of a guess result; the catalog shows them
+on purpose.
 
     uvicorn main:app --reload --port 8787
 """
@@ -20,7 +23,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from territories import TERRITORIES, get_shape
+from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape
 
 EARTH_RADIUS_KM = 6371.0
 DATA_DIR = Path(__file__).parent / "data"
@@ -77,10 +80,41 @@ def score(distance: float, area_km2: float) -> int:
     return max(0, round(1000 * math.exp(-distance / (0.18 * size_km))))
 
 
-@app.get("/api/territory")
-def get_territory() -> dict:
-    t = random.choice(PLAYABLE)
+def territory_json(territory_id: str) -> dict:
+    t = TERRITORIES_BY_ID.get(territory_id)
+    if t is None or territory_id not in ANSWERS:
+        raise HTTPException(404, f'Unknown territory "{territory_id}".')
     return {"id": t.id, "name": t.name, "region": t.region, "shape": get_shape(t.id)}
+
+
+@app.get("/api/territory")
+def get_territory(id: str | None = None) -> dict:
+    return territory_json(id or random.choice(PLAYABLE).id)
+
+
+@app.get("/api/catalog")
+def get_catalog() -> dict:
+    used = {c for t in PLAYABLE for c in t.categories}
+    return {
+        "categories": [c for c in CATEGORIES if c in used],
+        "territories": [
+            {"id": t.id, "name": t.name, "region": t.region, "categories": t.categories}
+            for t in sorted(PLAYABLE, key=lambda t: t.name)
+        ],
+    }
+
+
+@app.get("/api/catalog/{territory_id}")
+def get_catalog_entry(territory_id: str) -> dict:
+    territory = territory_json(territory_id)
+    answer = ANSWERS[territory_id]
+    return {
+        "territory": territory,
+        "trueCom": {"lat": answer["lat"], "lon": answer["lon"]},
+        "population": answer["population"],
+        "areaKm2": answer["area_km2"],
+        "density": load_density(territory_id).model_dump(),
+    }
 
 
 @app.post("/api/guess")

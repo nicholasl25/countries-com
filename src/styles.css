@@ -68,7 +68,10 @@ button {
 }
 
 .brand {
+  display: inline-block;
   margin: 0;
+  color: inherit;
+  text-decoration: none;
   font-family: var(--font-brand);
   font-size: clamp(1.1rem, 5vw, 2.75rem);
   white-space: nowrap;
@@ -81,12 +84,41 @@ button {
   color: var(--accent);
 }
 
-.tag {
-  margin: 0.35rem 0 0;
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.75rem, 3vw, 2rem);
+  margin-top: 0.9rem;
+}
+
+.menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.1rem;
+  border-bottom: 2px solid transparent;
   color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.menu-item:hover {
+  color: var(--ink);
+}
+
+.menu-item.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.menu-soon {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .stage {
@@ -125,8 +157,11 @@ button {
   width: 100%;
   height: 100%;
   display: block;
-  cursor: crosshair;
   touch-action: manipulation;
+}
+
+.map.is-pickable {
+  cursor: crosshair;
 }
 
 .map-frame {
@@ -159,6 +194,10 @@ button {
   margin: 0 0 0.9rem;
   font-size: 0.78rem;
   color: var(--ink-soft);
+}
+
+.place + .legend {
+  margin-top: 0.7rem;
 }
 
 .legend-bar {
@@ -316,12 +355,6 @@ button {
   white-space: nowrap;
 }
 
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-}
-
 .distance {
   margin: 0.35rem 0 0.9rem;
   color: var(--ink-soft);
@@ -337,7 +370,23 @@ button {
   transition: background 160ms ease, border-color 160ms ease;
 }
 
-.btn:hover {
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #222;
+  border-color: #222;
+}
+
+.btn:not(.btn-primary):hover {
   background: white;
   border-color: var(--ink);
 }
@@ -445,4 +494,114 @@ button {
   .skeleton-map {
     animation: none !important;
   }
+}
+
+/* Catalog */
+
+.catalog,
+.catalog-detail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #000;
+  border-radius: 999px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.chip:hover {
+  background: var(--mist);
+}
+
+.chip.is-active {
+  background: #000;
+  color: #fff;
+}
+
+.chip-count {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.catalog-grid {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.6rem;
+}
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid #000;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.catalog-card:hover {
+  background: var(--land);
+  color: #fff;
+}
+
+.catalog-name {
+  font-family: var(--font-brand);
+  font-size: 1.15rem;
+}
+
+.catalog-region {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.back-link {
+  align-self: flex-start;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1.5rem;
+  margin: 0 0 1rem;
+  text-align: left;
+}
+
+.facts dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0.1rem 0 0;
+  font-variant-numeric: tabular-nums;
 }

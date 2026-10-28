@@ -4,12 +4,11 @@ import type { Feature, MultiPolygon, Polygon } from 'geojson'
  * The contract between the frontend and the backend.
  *
  * Everything the UI needs from a server is described here. The backend should
- * implement these shapes (see `http.ts` for the routes); until then `mock.ts`
- * implements them in the browser.
+ * implement these shapes (see `http.ts` for the routes).
  *
  * All locations are geographic (lat/lon). Projecting onto the screen is purely
  * a frontend concern, and computing the answer is purely a backend concern —
- * the true center of mass only comes back from `submitGuess`.
+ * in the game, the true center of mass only comes back from `submitGuess`.
  */
 
 /** A geographic location in degrees. */
@@ -47,11 +46,39 @@ export type GuessResult = {
   density: DensityGrid
 }
 
+export type CatalogEntry = {
+  id: string
+  name: string
+  region: string
+  /** Catalog groups this territory belongs to, e.g. ["Countries", "Europe"] */
+  categories: string[]
+}
+
+export type Catalog = {
+  /** Category names in display order */
+  categories: string[]
+  /** Sorted by name */
+  territories: CatalogEntry[]
+}
+
+/** Everything about one territory, answer included — for the catalog only. */
+export type CatalogDetail = {
+  territory: Territory
+  trueCom: LatLon
+  population: number
+  areaKm2: number
+  density: DensityGrid
+}
+
 export interface GameApi {
-  /** Fetch a territory to play. */
-  getTerritory(): Promise<Territory>
+  /** Fetch a territory to play: the given one, or a random one. */
+  getTerritory(id?: string): Promise<Territory>
   /** Submit a guess for a territory and get the scored result. */
   submitGuess(territoryId: string, guess: LatLon): Promise<GuessResult>
+  /** List every territory, grouped into categories. */
+  getCatalog(): Promise<Catalog>
+  /** One territory with its answer and heat map. */
+  getCatalogDetail(id: string): Promise<CatalogDetail>
 }
 
 export class ApiError extends Error {

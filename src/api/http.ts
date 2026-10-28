@@ -1,5 +1,7 @@
 import {
   ApiError,
+  type Catalog,
+  type CatalogDetail,
   type GameApi,
   type GuessResult,
   type LatLon,
@@ -10,9 +12,11 @@ import {
  * HTTP implementation of `GameApi`. Routes the backend needs to provide
  * (all JSON, relative to `baseUrl`):
  *
- *   GET  /territory  -> Territory (with GeoJSON `shape`)
- *   POST /guess      -> GuessResult
+ *   GET  /territory[?id=]  -> Territory (with GeoJSON `shape`)
+ *   POST /guess            -> GuessResult
  *        body: { territoryId: string, guess: { lat, lon } }
+ *   GET  /catalog          -> Catalog
+ *   GET  /catalog/{id}     -> CatalogDetail
  *
  * Non-2xx responses may include `{ "error": "message" }`.
  */
@@ -38,11 +42,15 @@ export function createHttpApi(baseUrl: string): GameApi {
   }
 
   return {
-    getTerritory: () => request<Territory>('/territory'),
+    getTerritory: (id?: string) =>
+      request<Territory>(id ? `/territory?id=${encodeURIComponent(id)}` : '/territory'),
     submitGuess: (territoryId: string, guess: LatLon) =>
       request<GuessResult>('/guess', {
         method: 'POST',
         body: JSON.stringify({ territoryId, guess }),
       }),
+    getCatalog: () => request<Catalog>('/catalog'),
+    getCatalogDetail: (id: string) =>
+      request<CatalogDetail>(`/catalog/${encodeURIComponent(id)}`),
   }
 }
