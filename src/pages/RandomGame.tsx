@@ -79,7 +79,7 @@ export function RandomGame({ territoryId, category }: Props) {
         ) : (
           <>
             Click the map where you think the population{' '}
-            <span className="nowrap">center of mass (CoM)</span> sits.
+            <span className="nowrap">center of mass</span> sits.
           </>
         )}
       </p>
