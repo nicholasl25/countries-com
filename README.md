@@ -2,7 +2,7 @@
 
 **Countries.COM** (Countries. Center of Mass) is a map game: you see a territory, click where you think the population-weighted center of mass is, and get scored on how close you land.
 
-Territories are real borders from [`us-atlas`](https://github.com/topojson/us-atlas) (US states) and [`world-atlas`](https://github.com/topojson/world-atlas) (countries). Answers are precomputed from the [GHS-POP](https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php) 2025 population grid (~1 km, European Commission JRC, CC BY 4.0).
+Territories are real borders from [us-atlas](https://github.com/topojson/us-atlas) (US states) and [world-atlas](https://github.com/topojson/world-atlas) (countries). Answers are precomputed from the [GHS-POP](https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php) 2025 population grid (~1 km, European Commission JRC, CC BY 4.0).
 
 ## Run locally
 
@@ -49,7 +49,7 @@ Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other 
 
 ### How the center of mass is computed
 
-Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. The same pass writes a downsampled, log-scaled density grid per territory to `data/density/` for the heat map. After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory. To add a territory, add it to `TERRITORIES` in `backend/territories.py` and rerun `npm run data:com`. Borders come from the `us-atlas` / `world-atlas` npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
+Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. The same pass writes a downsampled, log-scaled density grid per territory to `data/density/` for the heat map. After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory. To add a territory, add it to `TERRITORIES` in `backend/territories.py` and rerun `npm run data:com`. Borders come from the [us-atlas](https://github.com/topojson/us-atlas) / [world-atlas](https://github.com/topojson/world-atlas) npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
 
 ## Stack
 
