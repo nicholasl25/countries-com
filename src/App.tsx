@@ -17,7 +17,8 @@ export default function App() {
     <div className="page">
       <div className="atmosphere" aria-hidden="true" />
 
-      <header className="mast rise">
+      <header className="mast">
+        <div className="mast-inner">
         <a className="brand" href={routeHref({ page: 'random' })}>
           Countries<span className="brand-dot">.</span>CoM (Center of Mass)
         </a>
@@ -37,6 +38,7 @@ export default function App() {
             )
           })}
         </nav>
+        </div>
       </header>
 
       <main className="stage">

@@ -43,8 +43,7 @@ button {
   min-height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  padding: clamp(1.25rem, 3vw, 2.25rem);
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 .atmosphere {
@@ -63,8 +62,22 @@ button {
 }
 
 .mast {
-  text-align: center;
-  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #000;
+  color: #fff;
+  border-bottom: 4px solid var(--land);
+}
+
+.mast-inner {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 0.85rem clamp(1rem, 3vw, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .brand {
@@ -73,7 +86,7 @@ button {
   color: inherit;
   text-decoration: none;
   font-family: var(--font-brand);
-  font-size: clamp(1.1rem, 5vw, 2.75rem);
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
   white-space: nowrap;
   font-weight: 550;
   letter-spacing: -0.03em;
@@ -86,30 +99,31 @@ button {
 
 .menu {
   display: flex;
-  justify-content: center;
-  gap: clamp(0.75rem, 3vw, 2rem);
-  margin-top: 0.9rem;
+  gap: 0.35rem;
 }
 
 .menu-item {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.1rem;
-  border-bottom: 2px solid transparent;
-  color: var(--ink-soft);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  color: rgb(255 255 255 / 0.72);
   text-decoration: none;
   font-size: 0.95rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: background 140ms ease, color 140ms ease;
 }
 
 .menu-item:hover {
-  color: var(--ink);
+  color: #fff;
+  background: rgb(255 255 255 / 0.1);
 }
 
 .menu-item.is-active {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
+  color: #fff;
+  background: var(--land);
 }
 
 .menu-soon {
@@ -124,6 +138,7 @@ button {
 .stage {
   width: min(920px, 100%);
   margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem) clamp(0.85rem, 3vw, 2.25rem) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -397,7 +412,9 @@ a.btn {
 }
 
 .foot {
-  margin-top: 1.25rem;
+  margin-top: 2rem;
+  padding: 1.1rem 1rem 1.4rem;
+  border-top: 1px solid #e3e3e3;
   text-align: center;
 }
 
@@ -471,8 +488,15 @@ a.btn {
 }
 
 @media (max-width: 640px) {
-  .page {
-    padding: 1rem 0.85rem 1.25rem;
+  .mast-inner {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: 0.7rem 0.6rem;
+  }
+
+  .menu-item {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.88rem;
   }
 
   .board {
