@@ -106,7 +106,13 @@ def get_catalog() -> dict:
     return {
         "categories": [c for c in CATEGORIES if c in used],
         "territories": [
-            {"id": t.id, "name": t.name, "region": t.region, "categories": t.categories}
+            {
+                "id": t.id,
+                "name": t.name,
+                "region": t.region,
+                "categories": t.categories,
+                "mapName": t.atlas_name if t.source == "countries" else "United States of America",
+            }
             for t in sorted(PLAYABLE, key=lambda t: t.name)
         ],
     }

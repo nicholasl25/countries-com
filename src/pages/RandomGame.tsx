@@ -20,7 +20,6 @@ export function RandomGame({ territoryId, category }: Props) {
   const [guess, setGuess] = useState<LatLon | null>(null)
   const [result, setResult] = useState<GuessResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [outsideHint, setOutsideHint] = useState(false)
 
   function loadTerritory(id?: string) {
     const query = id ? { id } : { category: category ?? undefined }
@@ -29,7 +28,6 @@ export function RandomGame({ territoryId, category }: Props) {
     setGuess(null)
     setResult(null)
     setSubmitError(null)
-    setOutsideHint(false)
     setTerritory(null)
     api
       .getTerritory(query)
@@ -47,14 +45,9 @@ export function RandomGame({ territoryId, category }: Props) {
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => loadTerritory(territoryId), [])
 
-  function onPick(point: LatLon | null) {
+  function onPick(point: LatLon) {
     if (phase !== 'ready' || !territory) return
-    if (!point) {
-      setOutsideHint(true)
-      return
-    }
 
-    setOutsideHint(false)
     setSubmitError(null)
     setGuess(point)
     setPhase('submitting')
@@ -134,10 +127,6 @@ export function RandomGame({ territoryId, category }: Props) {
             <span className="place-name">{territory.name}</span>
             <span className="place-region">{territory.region}</span>
           </p>
-        )}
-
-        {outsideHint && phase === 'ready' && (
-          <p className="hint">Click inside the territory outline.</p>
         )}
 
         {submitError && phase === 'ready' && (

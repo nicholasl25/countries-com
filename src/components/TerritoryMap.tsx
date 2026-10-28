@@ -12,8 +12,9 @@ type Props = {
   trueCom?: LatLon | null
   /** Population heat map drawn inside the border */
   density?: DensityGrid | null
-  /** Called on click with the clicked location, or null if outside the border */
-  onPick?: (point: LatLon | null) => void
+  /** Called on click with the clicked location. It can be outside the border,
+   * since a center of mass can land in the sea or a neighboring country. */
+  onPick?: (point: LatLon) => void
 }
 
 const X_PATH = 'M -6 -6 L 6 6 M 6 -6 L -6 6'
@@ -35,7 +36,8 @@ export function TerritoryMap({ shape, label, guess, trueCom, density, onPick }: 
     pt.x = event.clientX
     pt.y = event.clientY
     const local = pt.matrixTransform(ctm.inverse())
-    onPick(map.toLatLon(local.x, local.y))
+    const point = map.unproject(local.x, local.y)
+    if (point) onPick(point)
   }
 
   return (

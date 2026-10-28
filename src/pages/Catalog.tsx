@@ -29,7 +29,9 @@ export function Catalog({ category }: Props) {
         REGIONS.map((r) => [
           r.category,
           new Set(
-            catalog?.territories.filter((t) => t.categories.includes(r.category)).map((t) => t.name),
+            catalog?.territories
+              .filter((t) => t.categories.includes(r.category))
+              .flatMap((t) => (t.mapName ? [t.mapName] : [])),
           ),
         ]),
       ),

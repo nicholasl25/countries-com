@@ -1,29 +1,521 @@
 {
   "source": "GHS-POP E2025 R2023A, 30 arc-second (JRC, CC BY 4.0)",
   "answers": {
-    "us-colorado": {
-      "lat": 39.5238,
-      "lon": -105.196,
-      "population": 6019612,
-      "area_km2": 268948
+    "afghanistan": {
+      "lat": 34.643,
+      "lon": 67.4667,
+      "population": 44181482,
+      "area_km2": 642097
     },
-    "us-texas": {
-      "lat": 30.8382,
-      "lon": -97.3207,
-      "population": 30888455,
-      "area_km2": 688668
+    "us-alabama": {
+      "lat": 33.0419,
+      "lon": -86.747,
+      "population": 5169485,
+      "area_km2": 134032
+    },
+    "us-alaska": {
+      "lat": 61.6166,
+      "lon": -148.8731,
+      "population": 836028,
+      "area_km2": 1518661
+    },
+    "albania": {
+      "lat": 41.2143,
+      "lon": 19.8574,
+      "population": 2758546,
+      "area_km2": 28341
+    },
+    "algeria": {
+      "lat": 35.4807,
+      "lon": 3.496,
+      "population": 45889074,
+      "area_km2": 2322790
+    },
+    "american-samoa": {
+      "lat": -14.3156,
+      "lon": -170.7224,
+      "population": 33756,
+      "area_km2": 116
+    },
+    "andorra": {
+      "lat": 42.5274,
+      "lon": 1.5472,
+      "population": 80101,
+      "area_km2": 443
+    },
+    "angola": {
+      "lat": -10.848,
+      "lon": 14.853,
+      "population": 38401280,
+      "area_km2": 1249551
+    },
+    "anguilla": {
+      "lat": 18.2198,
+      "lon": -63.051,
+      "population": 10088,
+      "area_km2": 84
+    },
+    "antigua-and-barbuda": {
+      "lat": 17.114,
+      "lon": -61.8181,
+      "population": 81110,
+      "area_km2": 430
+    },
+    "argentina": {
+      "lat": -32.9277,
+      "lon": -61.4022,
+      "population": 45983433,
+      "area_km2": 2782612
+    },
+    "us-arizona": {
+      "lat": 33.3539,
+      "lon": -111.8651,
+      "population": 7785760,
+      "area_km2": 295374
+    },
+    "us-arkansas": {
+      "lat": 35.1782,
+      "lon": -92.6924,
+      "population": 3180640,
+      "area_km2": 137786
+    },
+    "armenia": {
+      "lat": 40.2774,
+      "lon": 44.5848,
+      "population": 2763743,
+      "area_km2": 29560
+    },
+    "aruba": {
+      "lat": 12.5187,
+      "lon": -69.9988,
+      "population": 94905,
+      "area_km2": 158
+    },
+    "australia": {
+      "lat": -33.545,
+      "lon": 144.9395,
+      "population": 26233248,
+      "area_km2": 7705923
+    },
+    "australian-indian-ocean-territories": {
+      "lat": -10.9467,
+      "lon": 103.2892,
+      "population": 16,
+      "area_km2": 145
+    },
+    "austria": {
+      "lat": 47.8022,
+      "lon": 14.671,
+      "population": 9077202,
+      "area_km2": 83898
+    },
+    "azerbaijan": {
+      "lat": 40.3095,
+      "lon": 48.1305,
+      "population": 10340600,
+      "area_km2": 86398
+    },
+    "bahamas": {
+      "lat": 25.2027,
+      "lon": -77.4291,
+      "population": 317643,
+      "area_km2": 12671
+    },
+    "bahrain": {
+      "lat": 26.1759,
+      "lon": 50.5461,
+      "population": 622383,
+      "area_km2": 544
+    },
+    "bangladesh": {
+      "lat": 23.9755,
+      "lon": 90.2397,
+      "population": 172543517,
+      "area_km2": 135698
+    },
+    "barbados": {
+      "lat": 13.149,
+      "lon": -59.5815,
+      "population": 196241,
+      "area_km2": 388
+    },
+    "belarus": {
+      "lat": 53.5534,
+      "lon": 27.8369,
+      "population": 9421107,
+      "area_km2": 206701
+    },
+    "belgium": {
+      "lat": 50.8448,
+      "lon": 4.4286,
+      "population": 11814430,
+      "area_km2": 30624
+    },
+    "belize": {
+      "lat": 17.3784,
+      "lon": -88.6527,
+      "population": 359801,
+      "area_km2": 22772
+    },
+    "benin": {
+      "lat": 8.0582,
+      "lon": 2.2957,
+      "population": 14584694,
+      "area_km2": 116553
+    },
+    "bermuda": {
+      "lat": 32.3061,
+      "lon": -64.7611,
+      "population": 37664,
+      "area_km2": 64
+    },
+    "bhutan": {
+      "lat": 27.1321,
+      "lon": 90.0705,
+      "population": 984045,
+      "area_km2": 39869
+    },
+    "bolivia": {
+      "lat": -17.5537,
+      "lon": -65.6608,
+      "population": 12642857,
+      "area_km2": 1090287
+    },
+    "bosnia-and-herzegovina": {
+      "lat": 44.3343,
+      "lon": 17.9216,
+      "population": 3198710,
+      "area_km2": 51692
+    },
+    "botswana": {
+      "lat": -23.074,
+      "lon": 25.7951,
+      "population": 2722390,
+      "area_km2": 580767
+    },
+    "brazil": {
+      "lat": -16.9652,
+      "lon": -45.789,
+      "population": 212131994,
+      "area_km2": 8499489
+    },
+    "british-virgin-islands": {
+      "lat": 18.4305,
+      "lon": -64.5966,
+      "population": 22843,
+      "area_km2": 132
+    },
+    "brunei": {
+      "lat": 4.8474,
+      "lon": 114.8095,
+      "population": 433395,
+      "area_km2": 5676
+    },
+    "bulgaria": {
+      "lat": 42.7375,
+      "lon": 24.9826,
+      "population": 6549785,
+      "area_km2": 112429
+    },
+    "burkina-faso": {
+      "lat": 12.2056,
+      "lon": -1.9321,
+      "population": 24444872,
+      "area_km2": 273676
+    },
+    "burundi": {
+      "lat": -3.2545,
+      "lon": 29.8288,
+      "population": 13926327,
+      "area_km2": 27206
+    },
+    "cabo-verde": {
+      "lat": 15.7108,
+      "lon": -24.0016,
+      "population": 537623,
+      "area_km2": 3582
     },
     "us-california": {
-      "lat": 35.4968,
-      "lon": -119.3101,
-      "population": 41157135,
-      "area_km2": 409701
+      "lat": 35.4966,
+      "lon": -119.31,
+      "population": 41159351,
+      "area_km2": 409706
     },
-    "poland": {
-      "lat": 51.7577,
-      "lon": 19.3177,
-      "population": 39682631,
-      "area_km2": 312554
+    "cambodia": {
+      "lat": 12.3966,
+      "lon": 104.5158,
+      "population": 17167204,
+      "area_km2": 181362
+    },
+    "cameroon": {
+      "lat": 6.0319,
+      "lon": 11.7492,
+      "population": 29693138,
+      "area_km2": 465921
+    },
+    "canada": {
+      "lat": 48.5908,
+      "lon": -87.9672,
+      "population": 37263874,
+      "area_km2": 9872185
+    },
+    "cayman-islands": {
+      "lat": 19.3059,
+      "lon": -81.3387,
+      "population": 52794,
+      "area_km2": 298
+    },
+    "central-african-republic": {
+      "lat": 5.418,
+      "lon": 18.3856,
+      "population": 6082978,
+      "area_km2": 621000
+    },
+    "chad": {
+      "lat": 11.67,
+      "lon": 17.4492,
+      "population": 19526100,
+      "area_km2": 1271012
+    },
+    "chile": {
+      "lat": -34.0625,
+      "lon": -71.2996,
+      "population": 19341105,
+      "area_km2": 737468
+    },
+    "china": {
+      "lat": 32.5958,
+      "lon": 113.6772,
+      "population": 1404667833,
+      "area_km2": 9371222
+    },
+    "colombia": {
+      "lat": 5.9076,
+      "lon": -74.813,
+      "population": 51937942,
+      "area_km2": 1139416
+    },
+    "us-colorado": {
+      "lat": 39.5237,
+      "lon": -105.196,
+      "population": 6019724,
+      "area_km2": 269316
+    },
+    "comoros": {
+      "lat": -11.9524,
+      "lon": 43.5558,
+      "population": 699569,
+      "area_km2": 1585
+    },
+    "congo": {
+      "lat": -2.6315,
+      "lon": 15.3724,
+      "population": 6558784,
+      "area_km2": 346850
+    },
+    "us-connecticut": {
+      "lat": 41.4966,
+      "lon": -72.8814,
+      "population": 3603345,
+      "area_km2": 12911
+    },
+    "cook-islands": {
+      "lat": -21.2133,
+      "lon": -159.7921,
+      "population": 6537,
+      "area_km2": 63
+    },
+    "costa-rica": {
+      "lat": 9.9798,
+      "lon": -84.1645,
+      "population": 5229986,
+      "area_km2": 51510
+    },
+    "croatia": {
+      "lat": 45.372,
+      "lon": 16.3701,
+      "population": 3570160,
+      "area_km2": 54410
+    },
+    "cuba": {
+      "lat": 21.8191,
+      "lon": -79.3374,
+      "population": 10797696,
+      "area_km2": 109297
+    },
+    "curacao": {
+      "lat": 12.145,
+      "lon": -68.9154,
+      "population": 176875,
+      "area_km2": 424
+    },
+    "cyprus": {
+      "lat": 34.9043,
+      "lon": 33.1846,
+      "population": 825250,
+      "area_km2": 5715
+    },
+    "czechia": {
+      "lat": 49.8445,
+      "lon": 15.5046,
+      "population": 10467643,
+      "area_km2": 78479
+    },
+    "cote-d-ivoire": {
+      "lat": 6.7159,
+      "lon": -5.3677,
+      "population": 29667070,
+      "area_km2": 322278
+    },
+    "us-delaware": {
+      "lat": 39.3545,
+      "lon": -75.5573,
+      "population": 1077323,
+      "area_km2": 5271
+    },
+    "democratic-republic-of-the-congo": {
+      "lat": -4.3582,
+      "lon": 23.3177,
+      "population": 108371154,
+      "area_km2": 2334671
+    },
+    "denmark": {
+      "lat": 55.879,
+      "lon": 10.8623,
+      "population": 5387995,
+      "area_km2": 42414
+    },
+    "djibouti": {
+      "lat": 11.5235,
+      "lon": 42.9339,
+      "population": 897921,
+      "area_km2": 21698
+    },
+    "dominica": {
+      "lat": 15.3806,
+      "lon": -61.3836,
+      "population": 57480,
+      "area_km2": 689
+    },
+    "dominican-republic": {
+      "lat": 18.7819,
+      "lon": -70.1642,
+      "population": 11460954,
+      "area_km2": 48582
+    },
+    "ecuador": {
+      "lat": -1.3701,
+      "lon": -79.2409,
+      "population": 17948805,
+      "area_km2": 255624
+    },
+    "egypt": {
+      "lat": 29.5292,
+      "lon": 31.2749,
+      "population": 113936036,
+      "area_km2": 1003551
+    },
+    "el-salvador": {
+      "lat": 13.7288,
+      "lon": -89.0861,
+      "population": 6372081,
+      "area_km2": 20399
+    },
+    "equatorial-guinea": {
+      "lat": 2.6866,
+      "lon": 9.3881,
+      "population": 1684200,
+      "area_km2": 26654
+    },
+    "eritrea": {
+      "lat": 15.2781,
+      "lon": 38.6601,
+      "population": 3944465,
+      "area_km2": 123670
+    },
+    "estonia": {
+      "lat": 59.0245,
+      "lon": 25.2785,
+      "population": 1252862,
+      "area_km2": 45449
+    },
+    "eswatini": {
+      "lat": -26.5145,
+      "lon": 31.4159,
+      "population": 1224131,
+      "area_km2": 17017
+    },
+    "ethiopia": {
+      "lat": 9.0237,
+      "lon": 38.566,
+      "population": 131986736,
+      "area_km2": 1131816
+    },
+    "falkland-islands": {
+      "lat": -51.7031,
+      "lon": -57.9665,
+      "population": 3157,
+      "area_km2": 11392
+    },
+    "faroe-islands": {
+      "lat": 62.0381,
+      "lon": -6.8365,
+      "population": 39553,
+      "area_km2": 1038
+    },
+    "fiji": {
+      "lat": -17.722,
+      "lon": 178.245,
+      "population": 842234,
+      "area_km2": 18406
+    },
+    "finland": {
+      "lat": 61.6916,
+      "lon": 24.9071,
+      "population": 5326240,
+      "area_km2": 330480
+    },
+    "us-florida": {
+      "lat": 27.844,
+      "lon": -81.6312,
+      "population": 22665884,
+      "area_km2": 151804
+    },
+    "france": {
+      "lat": 46.313,
+      "lon": 2.6905,
+      "population": 65458651,
+      "area_km2": 635082
+    },
+    "french-polynesia": {
+      "lat": -17.2797,
+      "lon": -149.2409,
+      "population": 199159,
+      "area_km2": 2607
+    },
+    "gabon": {
+      "lat": -0.3187,
+      "lon": 11.2684,
+      "population": 2264537,
+      "area_km2": 260677
+    },
+    "gambia": {
+      "lat": 13.4016,
+      "lon": -16.1297,
+      "population": 2734212,
+      "area_km2": 10317
+    },
+    "us-georgia": {
+      "lat": 33.4374,
+      "lon": -83.9123,
+      "population": 11147383,
+      "area_km2": 152721
+    },
+    "georgia": {
+      "lat": 41.9603,
+      "lon": 43.6943,
+      "population": 3586049,
+      "area_km2": 69303
     },
     "germany": {
       "lat": 50.8336,
@@ -31,23 +523,1187 @@
       "population": 83100949,
       "area_km2": 356148
     },
-    "egypt": {
-      "lat": 29.5292,
-      "lon": 31.2749,
-      "population": 113936036,
-      "area_km2": 1003474
+    "ghana": {
+      "lat": 6.8637,
+      "lon": -1.0271,
+      "population": 34771877,
+      "area_km2": 239587
     },
-    "brazil": {
-      "lat": -16.9653,
-      "lon": -45.7891,
-      "population": 212130447,
-      "area_km2": 8499478
+    "greece": {
+      "lat": 38.7457,
+      "lon": 23.3181,
+      "population": 9556667,
+      "area_km2": 130206
+    },
+    "greenland": {
+      "lat": 64.4299,
+      "lon": -47.2618,
+      "population": 11870,
+      "area_km2": 2154867
+    },
+    "grenada": {
+      "lat": 12.0846,
+      "lon": -61.6956,
+      "population": 98373,
+      "area_km2": 288
+    },
+    "guam": {
+      "lat": 13.4841,
+      "lon": 144.8052,
+      "population": 163393,
+      "area_km2": 489
+    },
+    "guatemala": {
+      "lat": 14.9813,
+      "lon": -90.7675,
+      "population": 18586913,
+      "area_km2": 108614
+    },
+    "guernsey": {
+      "lat": 49.4671,
+      "lon": -2.5567,
+      "population": 50544,
+      "area_km2": 49
+    },
+    "guinea": {
+      "lat": 10.2171,
+      "lon": -11.5213,
+      "population": 14779220,
+      "area_km2": 244965
+    },
+    "guinea-bissau": {
+      "lat": 12.0498,
+      "lon": -15.2305,
+      "population": 2070016,
+      "area_km2": 32021
+    },
+    "guyana": {
+      "lat": 6.4669,
+      "lon": -58.2479,
+      "population": 754874,
+      "area_km2": 211922
+    },
+    "haiti": {
+      "lat": 18.9293,
+      "lon": -72.6328,
+      "population": 11058297,
+      "area_km2": 26822
+    },
+    "us-hawaii": {
+      "lat": 21.0988,
+      "lon": -157.4545,
+      "population": 1521108,
+      "area_km2": 16732
+    },
+    "honduras": {
+      "lat": 14.7516,
+      "lon": -87.4779,
+      "population": 10762079,
+      "area_km2": 113524
+    },
+    "hong-kong": {
+      "lat": 22.4071,
+      "lon": 114.1315,
+      "population": 6535866,
+      "area_km2": 1031
+    },
+    "hungary": {
+      "lat": 47.3246,
+      "lon": 19.3872,
+      "population": 9892071,
+      "area_km2": 92974
+    },
+    "iceland": {
+      "lat": 64.3602,
+      "lon": -21.2493,
+      "population": 339104,
+      "area_km2": 101150
+    },
+    "us-idaho": {
+      "lat": 44.2168,
+      "lon": -115.2149,
+      "population": 1985968,
+      "area_km2": 215952
+    },
+    "us-illinois": {
+      "lat": 41.3346,
+      "lon": -88.3621,
+      "population": 12857464,
+      "area_km2": 145755
     },
     "india": {
       "lat": 22.6602,
       "lon": 80.0992,
       "population": 1444156800,
-      "area_km2": 3155884
+      "area_km2": 3155892
+    },
+    "us-indiana": {
+      "lat": 40.1453,
+      "lon": -86.2572,
+      "population": 6874699,
+      "area_km2": 93616
+    },
+    "indonesia": {
+      "lat": -4.919,
+      "lon": 110.2196,
+      "population": 269396368,
+      "area_km2": 1872303
+    },
+    "us-iowa": {
+      "lat": 41.9448,
+      "lon": -93.0501,
+      "population": 3250358,
+      "area_km2": 145460
+    },
+    "iran": {
+      "lat": 34.0251,
+      "lon": 52.3183,
+      "population": 89612081,
+      "area_km2": 1622834
+    },
+    "iraq": {
+      "lat": 33.6969,
+      "lon": 44.6244,
+      "population": 47552654,
+      "area_km2": 437483
+    },
+    "ireland": {
+      "lat": 53.1431,
+      "lon": -7.3699,
+      "population": 4953525,
+      "area_km2": 68700
+    },
+    "isle-of-man": {
+      "lat": 54.1909,
+      "lon": -4.5291,
+      "population": 81765,
+      "area_km2": 561
+    },
+    "israel": {
+      "lat": 32.1468,
+      "lon": 34.9526,
+      "population": 8338059,
+      "area_km2": 22276
+    },
+    "italy": {
+      "lat": 43.0925,
+      "lon": 12.065,
+      "population": 57096123,
+      "area_km2": 300266
+    },
+    "jamaica": {
+      "lat": 18.1091,
+      "lon": -77.199,
+      "population": 2629427,
+      "area_km2": 10938
+    },
+    "japan": {
+      "lat": 35.6673,
+      "lon": 137.132,
+      "population": 118004856,
+      "area_km2": 370047
+    },
+    "jersey": {
+      "lat": 49.2018,
+      "lon": -2.1223,
+      "population": 85225,
+      "area_km2": 128
+    },
+    "jordan": {
+      "lat": 31.9823,
+      "lon": 35.9059,
+      "population": 11416771,
+      "area_km2": 88854
+    },
+    "us-kansas": {
+      "lat": 38.4772,
+      "lon": -96.4193,
+      "population": 3060634,
+      "area_km2": 212826
+    },
+    "kazakhstan": {
+      "lat": 46.844,
+      "lon": 70.1555,
+      "population": 19979519,
+      "area_km2": 2712761
+    },
+    "us-kentucky": {
+      "lat": 37.8482,
+      "lon": -85.248,
+      "population": 4705353,
+      "area_km2": 104601
+    },
+    "kenya": {
+      "lat": -0.2845,
+      "lon": 36.7921,
+      "population": 57403293,
+      "area_km2": 594853
+    },
+    "kiribati": {
+      "lat": 1.3498,
+      "lon": 173.3723,
+      "population": 44354,
+      "area_km2": 938
+    },
+    "kosovo": {
+      "lat": 42.5341,
+      "lon": 20.9007,
+      "population": 1641084,
+      "area_km2": 10911
+    },
+    "kuwait": {
+      "lat": 29.2577,
+      "lon": 47.9759,
+      "population": 4064349,
+      "area_km2": 17333
+    },
+    "kyrgyzstan": {
+      "lat": 41.6794,
+      "lon": 73.6609,
+      "population": 6860433,
+      "area_km2": 198661
+    },
+    "laos": {
+      "lat": 17.9157,
+      "lon": 103.9084,
+      "population": 7774042,
+      "area_km2": 228909
+    },
+    "latvia": {
+      "lat": 56.8519,
+      "lon": 24.5353,
+      "population": 1747298,
+      "area_km2": 64248
+    },
+    "lebanon": {
+      "lat": 33.8446,
+      "lon": 35.6675,
+      "population": 4637009,
+      "area_km2": 10009
+    },
+    "lesotho": {
+      "lat": -29.4466,
+      "lon": 27.9499,
+      "population": 2380377,
+      "area_km2": 30022
+    },
+    "liberia": {
+      "lat": 6.5346,
+      "lon": -9.8809,
+      "population": 5219767,
+      "area_km2": 95696
+    },
+    "libya": {
+      "lat": 31.9321,
+      "lon": 15.7795,
+      "population": 6934683,
+      "area_km2": 1625986
+    },
+    "liechtenstein": {
+      "lat": 47.1517,
+      "lon": 9.5181,
+      "population": 45873,
+      "area_km2": 140
+    },
+    "lithuania": {
+      "lat": 55.1724,
+      "lon": 23.9742,
+      "population": 2657474,
+      "area_km2": 64513
+    },
+    "us-louisiana": {
+      "lat": 30.6744,
+      "lon": -91.4556,
+      "population": 4737222,
+      "area_km2": 123034
+    },
+    "luxembourg": {
+      "lat": 49.6382,
+      "lon": 6.0715,
+      "population": 670496,
+      "area_km2": 2615
+    },
+    "macao": {
+      "lat": 22.2299,
+      "lon": 113.5175,
+      "population": 127856,
+      "area_km2": 21
+    },
+    "madagascar": {
+      "lat": -19.3891,
+      "lon": 47.2751,
+      "population": 31302500,
+      "area_km2": 594611
+    },
+    "us-maine": {
+      "lat": 44.2987,
+      "lon": -69.7462,
+      "population": 1404730,
+      "area_km2": 85496
+    },
+    "malawi": {
+      "lat": -14.1667,
+      "lon": 34.3967,
+      "population": 22179453,
+      "area_km2": 119747
+    },
+    "malaysia": {
+      "lat": 3.7555,
+      "lon": 104.1712,
+      "population": 33101182,
+      "area_km2": 327572
+    },
+    "maldives": {
+      "lat": 4.1758,
+      "lon": 73.5054,
+      "population": 157380,
+      "area_km2": 66
+    },
+    "mali": {
+      "lat": 13.4342,
+      "lon": -6.4349,
+      "population": 24887602,
+      "area_km2": 1258369
+    },
+    "malta": {
+      "lat": 35.8991,
+      "lon": 14.4565,
+      "population": 495798,
+      "area_km2": 278
+    },
+    "marshall-islands": {
+      "lat": 7.8309,
+      "lon": 170.5843,
+      "population": 1426,
+      "area_km2": 237
+    },
+    "us-maryland": {
+      "lat": 39.1391,
+      "lon": -76.805,
+      "population": 6214083,
+      "area_km2": 27005
+    },
+    "us-massachusetts": {
+      "lat": 42.2639,
+      "lon": -71.3693,
+      "population": 7183780,
+      "area_km2": 21254
+    },
+    "mauritania": {
+      "lat": 17.2028,
+      "lon": -13.1371,
+      "population": 5170949,
+      "area_km2": 1038376
+    },
+    "mauritius": {
+      "lat": -20.2361,
+      "lon": 57.5546,
+      "population": 1229731,
+      "area_km2": 1881
+    },
+    "mexico": {
+      "lat": 21.237,
+      "lon": -100.0052,
+      "population": 129454319,
+      "area_km2": 1962123
+    },
+    "us-michigan": {
+      "lat": 42.893,
+      "lon": -84.2516,
+      "population": 10127280,
+      "area_km2": 150939
+    },
+    "micronesia": {
+      "lat": 7.3861,
+      "lon": 154.6071,
+      "population": 48040,
+      "area_km2": 527
+    },
+    "us-minnesota": {
+      "lat": 45.2148,
+      "lon": -93.581,
+      "population": 6026442,
+      "area_km2": 218056
+    },
+    "us-mississippi": {
+      "lat": 32.5971,
+      "lon": -89.5932,
+      "population": 3092875,
+      "area_km2": 123587
+    },
+    "us-missouri": {
+      "lat": 38.4317,
+      "lon": -92.2364,
+      "population": 6457587,
+      "area_km2": 180384
+    },
+    "moldova": {
+      "lat": 47.1547,
+      "lon": 28.5826,
+      "population": 3224165,
+      "area_km2": 33120
+    },
+    "monaco": {
+      "lat": 43.7488,
+      "lon": 7.4192,
+      "population": 10259,
+      "area_km2": 12
+    },
+    "mongolia": {
+      "lat": 47.8607,
+      "lon": 105.1642,
+      "population": 3541857,
+      "area_km2": 1560407
+    },
+    "us-montana": {
+      "lat": 46.8095,
+      "lon": -111.3232,
+      "population": 1139088,
+      "area_km2": 379926
+    },
+    "montenegro": {
+      "lat": 42.5659,
+      "lon": 19.2386,
+      "population": 602900,
+      "area_km2": 13667
+    },
+    "montserrat": {
+      "lat": 16.7781,
+      "lon": -62.1986,
+      "population": 2538,
+      "area_km2": 83
+    },
+    "morocco": {
+      "lat": 33.1481,
+      "lon": -6.7259,
+      "population": 38831032,
+      "area_km2": 582378
+    },
+    "mozambique": {
+      "lat": -17.977,
+      "lon": 35.8765,
+      "population": 34936969,
+      "area_km2": 790639
+    },
+    "myanmar": {
+      "lat": 19.6974,
+      "lon": 96.1607,
+      "population": 53141864,
+      "area_km2": 662720
+    },
+    "namibia": {
+      "lat": -20.0483,
+      "lon": 17.0244,
+      "population": 2712086,
+      "area_km2": 824606
+    },
+    "nauru": {
+      "lat": -0.5219,
+      "lon": 166.9288,
+      "population": 8516,
+      "area_km2": 27
+    },
+    "us-nebraska": {
+      "lat": 41.1878,
+      "lon": -97.243,
+      "population": 2026433,
+      "area_km2": 200209
+    },
+    "nepal": {
+      "lat": 27.6107,
+      "lon": 84.5938,
+      "population": 32678161,
+      "area_km2": 147187
+    },
+    "netherlands": {
+      "lat": 52.0944,
+      "lon": 5.1726,
+      "population": 17510300,
+      "area_km2": 37124
+    },
+    "us-nevada": {
+      "lat": 36.761,
+      "lon": -115.9116,
+      "population": 3313510,
+      "area_km2": 286196
+    },
+    "new-caledonia": {
+      "lat": -21.8817,
+      "lon": 166.139,
+      "population": 192118,
+      "area_km2": 18648
+    },
+    "us-new-hampshire": {
+      "lat": 43.1611,
+      "lon": -71.4666,
+      "population": 1489775,
+      "area_km2": 23991
+    },
+    "us-new-jersey": {
+      "lat": 40.4456,
+      "lon": -74.4223,
+      "population": 9052470,
+      "area_km2": 20128
+    },
+    "us-new-mexico": {
+      "lat": 34.6726,
+      "lon": -106.3763,
+      "population": 2321528,
+      "area_km2": 314936
+    },
+    "us-new-york": {
+      "lat": 41.495,
+      "lon": -74.5881,
+      "population": 19717899,
+      "area_km2": 126932
+    },
+    "new-zealand": {
+      "lat": -39.5216,
+      "lon": 174.3568,
+      "population": 4879151,
+      "area_km2": 266806
+    },
+    "nicaragua": {
+      "lat": 12.6304,
+      "lon": -85.8769,
+      "population": 7125556,
+      "area_km2": 129241
+    },
+    "niger": {
+      "lat": 13.9917,
+      "lon": 6.1048,
+      "population": 29383217,
+      "area_km2": 1185106
+    },
+    "nigeria": {
+      "lat": 8.6352,
+      "lon": 7.2511,
+      "population": 232684637,
+      "area_km2": 911536
+    },
+    "niue": {
+      "lat": -19.0587,
+      "lon": -169.9127,
+      "population": 1370,
+      "area_km2": 196
+    },
+    "norfolk-island": {
+      "lat": -29.0389,
+      "lon": 167.9562,
+      "population": 1587,
+      "area_km2": 41
+    },
+    "us-north-carolina": {
+      "lat": 35.5558,
+      "lon": -79.6374,
+      "population": 11464176,
+      "area_km2": 129148
+    },
+    "us-north-dakota": {
+      "lat": 47.3601,
+      "lon": -99.3016,
+      "population": 786729,
+      "area_km2": 182661
+    },
+    "north-korea": {
+      "lat": 39.6449,
+      "lon": 126.5955,
+      "population": 25543723,
+      "area_km2": 122524
+    },
+    "north-macedonia": {
+      "lat": 41.7493,
+      "lon": 21.5317,
+      "population": 2085214,
+      "area_km2": 25365
+    },
+    "northern-cyprus": {
+      "lat": 35.2187,
+      "lon": 33.4565,
+      "population": 398804,
+      "area_km2": 3472
+    },
+    "northern-mariana-islands": {
+      "lat": 15.1295,
+      "lon": 145.7061,
+      "population": 46048,
+      "area_km2": 395
+    },
+    "norway": {
+      "lat": 60.7008,
+      "lon": 9.496,
+      "population": 4847026,
+      "area_km2": 384271
+    },
+    "us-ohio": {
+      "lat": 40.4269,
+      "lon": -82.8052,
+      "population": 11862631,
+      "area_km2": 106851
+    },
+    "us-oklahoma": {
+      "lat": 35.6144,
+      "lon": -96.832,
+      "population": 4211482,
+      "area_km2": 181008
+    },
+    "oman": {
+      "lat": 22.8531,
+      "lon": 57.3462,
+      "population": 4803311,
+      "area_km2": 312061
+    },
+    "us-oregon": {
+      "lat": 44.7536,
+      "lon": -122.5851,
+      "population": 4542301,
+      "area_km2": 250959
+    },
+    "pakistan": {
+      "lat": 30.4615,
+      "lon": 71.3527,
+      "population": 249092060,
+      "area_km2": 873744
+    },
+    "palau": {
+      "lat": 7.4659,
+      "lon": 134.5688,
+      "population": 3023,
+      "area_km2": 340
+    },
+    "palestine": {
+      "lat": 31.757,
+      "lon": 34.9306,
+      "population": 6636143,
+      "area_km2": 6340
+    },
+    "panama": {
+      "lat": 8.8228,
+      "lon": -80.2709,
+      "population": 4510915,
+      "area_km2": 74226
+    },
+    "papua-new-guinea": {
+      "lat": -6.1699,
+      "lon": 145.5904,
+      "population": 9837713,
+      "area_km2": 464247
+    },
+    "paraguay": {
+      "lat": -25.2838,
+      "lon": -56.4988,
+      "population": 6854351,
+      "area_km2": 400910
+    },
+    "us-pennsylvania": {
+      "lat": 40.4673,
+      "lon": -76.953,
+      "population": 13208059,
+      "area_km2": 117219
+    },
+    "peru": {
+      "lat": -10.7382,
+      "lon": -76.2616,
+      "population": 34282055,
+      "area_km2": 1296229
+    },
+    "philippines": {
+      "lat": 12.4465,
+      "lon": 122.4379,
+      "population": 109240556,
+      "area_km2": 290321
+    },
+    "poland": {
+      "lat": 51.7577,
+      "lon": 19.3177,
+      "population": 39682631,
+      "area_km2": 312554
+    },
+    "portugal": {
+      "lat": 39.7915,
+      "lon": -9.0771,
+      "population": 9206486,
+      "area_km2": 90760
+    },
+    "puerto-rico": {
+      "lat": 18.2777,
+      "lon": -66.3547,
+      "population": 3213542,
+      "area_km2": 8937
+    },
+    "qatar": {
+      "lat": 25.3,
+      "lon": 51.4456,
+      "population": 2596979,
+      "area_km2": 11077
+    },
+    "us-rhode-island": {
+      "lat": 41.7486,
+      "lon": -71.4543,
+      "population": 1083571,
+      "area_km2": 2855
+    },
+    "romania": {
+      "lat": 45.708,
+      "lon": 25.242,
+      "population": 19265028,
+      "area_km2": 235733
+    },
+    "russia": {
+      "lat": 56.0355,
+      "lon": 51.9924,
+      "population": 144931963,
+      "area_km2": 16879681
+    },
+    "rwanda": {
+      "lat": -1.9773,
+      "lon": 29.9029,
+      "population": 14660236,
+      "area_km2": 25378
+    },
+    "saint-barthelemy": {
+      "lat": 17.904,
+      "lon": -62.8434,
+      "population": 7900,
+      "area_km2": 24
+    },
+    "saint-helena": {
+      "lat": -14.9542,
+      "lon": -6.8357,
+      "population": 4278,
+      "area_km2": 189
+    },
+    "saint-kitts-and-nevis": {
+      "lat": 17.2692,
+      "lon": -62.691,
+      "population": 32752,
+      "area_km2": 236
+    },
+    "saint-lucia": {
+      "lat": 13.9211,
+      "lon": -60.9753,
+      "population": 142744,
+      "area_km2": 553
+    },
+    "saint-martin": {
+      "lat": 18.0837,
+      "lon": -63.0474,
+      "population": 22947,
+      "area_km2": 56
+    },
+    "saint-pierre-and-miquelon": {
+      "lat": 46.7769,
+      "lon": -56.1754,
+      "population": 4350,
+      "area_km2": 208
+    },
+    "saint-vincent-and-the-grenadines": {
+      "lat": 13.1707,
+      "lon": -61.2156,
+      "population": 50970,
+      "area_km2": 308
+    },
+    "samoa": {
+      "lat": -13.8362,
+      "lon": -171.9098,
+      "population": 166211,
+      "area_km2": 2716
+    },
+    "san-marino": {
+      "lat": 43.9495,
+      "lon": 12.4647,
+      "population": 32787,
+      "area_km2": 70
+    },
+    "saudi-arabia": {
+      "lat": 23.5665,
+      "lon": 43.4943,
+      "population": 37226746,
+      "area_km2": 1925856
+    },
+    "senegal": {
+      "lat": 14.5134,
+      "lon": -16.0064,
+      "population": 18377629,
+      "area_km2": 197320
+    },
+    "serbia": {
+      "lat": 44.4476,
+      "lon": 20.6221,
+      "population": 7165501,
+      "area_km2": 77473
+    },
+    "seychelles": {
+      "lat": -4.6494,
+      "lon": 55.4735,
+      "population": 77389,
+      "area_km2": 170
+    },
+    "siachen-glacier": {
+      "lat": 35.4386,
+      "lon": 77.4659,
+      "population": 62,
+      "area_km2": 2129
+    },
+    "sierra-leone": {
+      "lat": 8.4252,
+      "lon": -12.0646,
+      "population": 8357881,
+      "area_km2": 71855
+    },
+    "singapore": {
+      "lat": 1.3606,
+      "lon": 103.8395,
+      "population": 5517369,
+      "area_km2": 483
+    },
+    "sint-maarten": {
+      "lat": 18.0487,
+      "lon": -63.0544,
+      "population": 36654,
+      "area_km2": 39
+    },
+    "slovakia": {
+      "lat": 48.6765,
+      "lon": 19.2007,
+      "population": 5606096,
+      "area_km2": 48332
+    },
+    "slovenia": {
+      "lat": 46.1552,
+      "lon": 14.8395,
+      "population": 2129849,
+      "area_km2": 20203
+    },
+    "solomon-islands": {
+      "lat": -9.145,
+      "lon": 160.0474,
+      "population": 494308,
+      "area_km2": 25719
+    },
+    "somalia": {
+      "lat": 3.2932,
+      "lon": 45.1262,
+      "population": 14137100,
+      "area_km2": 473703
+    },
+    "somaliland": {
+      "lat": 9.6593,
+      "lon": 44.8476,
+      "population": 4562830,
+      "area_km2": 168368
+    },
+    "south-africa": {
+      "lat": -28.2671,
+      "lon": 27.5225,
+      "population": 61270227,
+      "area_km2": 1221514
+    },
+    "us-south-carolina": {
+      "lat": 34.0258,
+      "lon": -81.0023,
+      "population": 5611786,
+      "area_km2": 80671
+    },
+    "us-south-dakota": {
+      "lat": 44.0325,
+      "lon": -98.9794,
+      "population": 919914,
+      "area_km2": 199186
+    },
+    "south-korea": {
+      "lat": 36.7176,
+      "lon": 127.4964,
+      "population": 48437589,
+      "area_km2": 97150
+    },
+    "south-sudan": {
+      "lat": 5.9426,
+      "lon": 31.7848,
+      "population": 11471520,
+      "area_km2": 623901
+    },
+    "spain": {
+      "lat": 39.8303,
+      "lon": -3.0758,
+      "population": 45196035,
+      "area_km2": 506182
+    },
+    "sri-lanka": {
+      "lat": 7.1846,
+      "lon": 80.4153,
+      "population": 20895743,
+      "area_km2": 66053
+    },
+    "sudan": {
+      "lat": 14.2047,
+      "lon": 30.6218,
+      "population": 50705531,
+      "area_km2": 1863530
+    },
+    "suriname": {
+      "lat": 5.6788,
+      "lon": -55.2665,
+      "population": 625810,
+      "area_km2": 145577
+    },
+    "sweden": {
+      "lat": 58.8081,
+      "lon": 15.3361,
+      "population": 9826237,
+      "area_km2": 442962
+    },
+    "switzerland": {
+      "lat": 47.0182,
+      "lon": 7.9336,
+      "population": 8915764,
+      "area_km2": 41212
+    },
+    "syria": {
+      "lat": 35.0277,
+      "lon": 37.2788,
+      "population": 24929918,
+      "area_km2": 185728
+    },
+    "sao-tome-and-principe": {
+      "lat": 0.3664,
+      "lon": 6.7389,
+      "population": 214612,
+      "area_km2": 981
+    },
+    "taiwan": {
+      "lat": 24.2409,
+      "lon": 120.9599,
+      "population": 23452262,
+      "area_km2": 36005
+    },
+    "tajikistan": {
+      "lat": 38.6927,
+      "lon": 69.19,
+      "population": 10621498,
+      "area_km2": 142298
+    },
+    "tanzania": {
+      "lat": -5.4731,
+      "lon": 35.182,
+      "population": 71025347,
+      "area_km2": 945856
+    },
+    "us-tennessee": {
+      "lat": 35.8345,
+      "lon": -86.3576,
+      "population": 7357495,
+      "area_km2": 109163
+    },
+    "us-texas": {
+      "lat": 30.8382,
+      "lon": -97.3207,
+      "population": 30888459,
+      "area_km2": 688671
+    },
+    "thailand": {
+      "lat": 14.2702,
+      "lon": 101.0188,
+      "population": 71270382,
+      "area_km2": 515755
+    },
+    "timor-leste": {
+      "lat": -8.7477,
+      "lon": 125.6569,
+      "population": 1334520,
+      "area_km2": 15015
+    },
+    "togo": {
+      "lat": 7.7743,
+      "lon": 1.0341,
+      "population": 9455341,
+      "area_km2": 57151
+    },
+    "tonga": {
+      "lat": -20.8826,
+      "lon": -175.06,
+      "population": 91154,
+      "area_km2": 429
+    },
+    "trinidad-and-tobago": {
+      "lat": 10.5018,
+      "lon": -61.3879,
+      "population": 1472342,
+      "area_km2": 5106
+    },
+    "tunisia": {
+      "lat": 35.7965,
+      "lon": 10.0061,
+      "population": 11610086,
+      "area_km2": 156649
+    },
+    "turkey": {
+      "lat": 39.2757,
+      "lon": 33.2006,
+      "population": 83349391,
+      "area_km2": 779763
+    },
+    "turkmenistan": {
+      "lat": 38.7912,
+      "lon": 60.4438,
+      "population": 6863376,
+      "area_km2": 470586
+    },
+    "turks-and-caicos-islands": {
+      "lat": 21.7882,
+      "lon": -72.2417,
+      "population": 31777,
+      "area_km2": 330
+    },
+    "u-s-virgin-islands": {
+      "lat": 18.0338,
+      "lon": -64.841,
+      "population": 75403,
+      "area_km2": 320
+    },
+    "uganda": {
+      "lat": 0.9522,
+      "lon": 32.2353,
+      "population": 51398271,
+      "area_km2": 242499
+    },
+    "ukraine": {
+      "lat": 49.1261,
+      "lon": 31.4018,
+      "population": 36477440,
+      "area_km2": 570148
+    },
+    "united-arab-emirates": {
+      "lat": 24.9237,
+      "lon": 55.2788,
+      "population": 8727144,
+      "area_km2": 71260
+    },
+    "united-kingdom": {
+      "lat": 52.7119,
+      "lon": -1.5878,
+      "population": 65981825,
+      "area_km2": 239589
+    },
+    "united-states": {
+      "lat": 38.4693,
+      "lon": -92.5217,
+      "population": 337003961,
+      "area_km2": 9439349
+    },
+    "uruguay": {
+      "lat": -33.9798,
+      "lon": -56.2398,
+      "population": 3316733,
+      "area_km2": 177549
+    },
+    "us-utah": {
+      "lat": 40.47,
+      "lon": -111.909,
+      "population": 3372008,
+      "area_km2": 219764
+    },
+    "uzbekistan": {
+      "lat": 40.3813,
+      "lon": 67.8593,
+      "population": 36255993,
+      "area_km2": 447394
+    },
+    "vanuatu": {
+      "lat": -17.113,
+      "lon": 168.113,
+      "population": 230547,
+      "area_km2": 11275
+    },
+    "vatican": {
+      "lat": 41.9038,
+      "lon": 12.4336,
+      "population": 14466,
+      "area_km2": 1
+    },
+    "venezuela": {
+      "lat": 9.759,
+      "lon": -67.9958,
+      "population": 28629308,
+      "area_km2": 914297
+    },
+    "us-vermont": {
+      "lat": 44.1041,
+      "lon": -72.818,
+      "population": 658524,
+      "area_km2": 24866
+    },
+    "vietnam": {
+      "lat": 15.2107,
+      "lon": 106.448,
+      "population": 97413899,
+      "area_km2": 328965
+    },
+    "us-virginia": {
+      "lat": 37.8684,
+      "lon": -77.7757,
+      "population": 8812110,
+      "area_km2": 105079
+    },
+    "wallis-and-futuna": {
+      "lat": -13.7512,
+      "lon": -177.0902,
+      "population": 5137,
+      "area_km2": 132
+    },
+    "us-washington": {
+      "lat": 47.3319,
+      "lon": -121.6146,
+      "population": 7918765,
+      "area_km2": 175194
+    },
+    "us-west-virginia": {
+      "lat": 38.8077,
+      "lon": -80.7108,
+      "population": 1797360,
+      "area_km2": 62652
+    },
+    "western-sahara": {
+      "lat": 22.078,
+      "lon": -15.7634,
+      "population": 4086,
+      "area_km2": 90587
+    },
+    "us-wisconsin": {
+      "lat": 43.7181,
+      "lon": -89.0252,
+      "population": 5931061,
+      "area_km2": 145127
+    },
+    "us-wyoming": {
+      "lat": 42.7231,
+      "lon": -107.0229,
+      "population": 622026,
+      "area_km2": 252914
+    },
+    "yemen": {
+      "lat": 14.7505,
+      "lon": 44.4125,
+      "population": 35308194,
+      "area_km2": 454147
+    },
+    "zambia": {
+      "lat": -13.6167,
+      "lon": 28.6604,
+      "population": 21818278,
+      "area_km2": 755510
+    },
+    "zimbabwe": {
+      "lat": -18.6769,
+      "lon": 30.6134,
+      "population": 17330214,
+      "area_km2": 390231
+    },
+    "aland": {
+      "lat": 60.1629,
+      "lon": 19.9318,
+      "population": 25168,
+      "area_km2": 762
     }
   }
 }

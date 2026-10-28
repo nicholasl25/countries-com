@@ -24,7 +24,10 @@ export type Territory = {
   shape: TerritoryShape
 }
 
-/** Population density on a lat/lon grid (row 0 = north), for the heat map. */
+/**
+ * Population density on a lat/lon grid (row 0 = north), for the heat map.
+ * For territories crossing the antimeridian, `east` (and maybe `west`) exceed 180.
+ */
 export type DensityGrid = {
   west: number
   south: number
@@ -52,6 +55,8 @@ export type CatalogEntry = {
   region: string
   /** Catalog groups this territory belongs to, e.g. ["Countries", "Europe"] */
   categories: string[]
+  /** Name of the world preview map feature containing this territory */
+  mapName: string | null
 }
 
 export type Catalog = {

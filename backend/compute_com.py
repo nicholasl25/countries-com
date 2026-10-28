@@ -23,8 +23,9 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from affine import Affine
 from rasterio.features import geometry_mask
-from rasterio.windows import from_bounds
+from rasterio.windows import Window
 
 from territories import TERRITORIES, get_shape
 
@@ -53,13 +54,48 @@ def ensure_raster() -> None:
         z.extractall(RAW_DIR)
 
 
-def bounds(shape: dict) -> tuple[float, float, float, float]:
-    g = shape["geometry"]
-    polygons = [g["coordinates"]] if g["type"] == "Polygon" else g["coordinates"]
-    points = np.array([p for poly in polygons for ring in poly for p in ring])
+def _points(geometry: dict) -> np.ndarray:
+    polygons = [geometry["coordinates"]] if geometry["type"] == "Polygon" else geometry["coordinates"]
+    return np.array([p for poly in polygons for ring in poly for p in ring])
+
+
+def bounds(geometry: dict) -> tuple[float, float, float, float]:
+    points = _points(geometry)
     west, south = points.min(axis=0)
     east, north = points.max(axis=0)
     return west, south, east, north
+
+
+def shift_east(geometry: dict) -> dict:
+    """Move western-hemisphere longitudes to 180–360 so a territory that crosses
+    the antimeridian (Alaska, Russia, Fiji...) is one contiguous range."""
+
+    def shift(coords):
+        if isinstance(coords[0], (int, float)):
+            return [coords[0] + 360 if coords[0] < 0 else coords[0], coords[1]]
+        return [shift(c) for c in coords]
+
+    return {"type": geometry["type"], "coordinates": shift(geometry["coordinates"])}
+
+
+def read_window(src: rasterio.DatasetReader, west: float, south: float, east: float, north: float):
+    """Read the population grid for a lon/lat box. `east` may exceed 180, in
+    which case the read wraps around to the start of the raster."""
+    col0, row0 = ~src.transform * (west, north)
+    col1, row1 = ~src.transform * (east, south)
+    col0, col1 = math.floor(col0), math.ceil(col1)
+    row0, row1 = max(0, math.floor(row0)), min(src.height, math.ceil(row1))
+
+    parts = []
+    col = col0
+    while col < col1:
+        start = col % src.width
+        width = min(col1 - col, src.width - start)
+        window = Window(start, row0, width, row1 - row0)
+        parts.append(src.read(1, window=window, masked=True).filled(0))
+        col += width
+    pop = np.hstack(parts).astype(np.float64)
+    return pop, src.transform * Affine.translation(col0, row0)
 
 
 def density_grid(pop: np.ndarray, area: np.ndarray, transform) -> dict:
@@ -93,14 +129,23 @@ def density_grid(pop: np.ndarray, area: np.ndarray, transform) -> dict:
     }
 
 
-def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict]:
-    window = from_bounds(*bounds(shape), transform=src.transform).round_offsets().round_lengths()
-    pop = src.read(1, window=window, masked=True).filled(0).astype(np.float64)
-    transform = src.window_transform(window)
+def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict] | None:
+    """Returns (answer, density grid), or None if nobody lives there."""
+    geometry = shape["geometry"]
+    west, south, east, north = bounds(geometry)
+    if east - west > 180:
+        geometry = shift_east(geometry)
+        west, south, east, north = bounds(geometry)
+    pop, transform = read_window(src, west, south, east, north)
 
-    # True for cells whose center is inside the territory.
-    inside = ~geometry_mask([shape["geometry"]], out_shape=pop.shape, transform=transform)
+    # True for cells whose center is inside the territory. Territories smaller
+    # than a cell may contain no cell centers; count any cell they touch.
+    inside = ~geometry_mask([geometry], out_shape=pop.shape, transform=transform)
+    if not inside.any():
+        inside = ~geometry_mask([geometry], out_shape=pop.shape, transform=transform, all_touched=True)
     pop = np.where(inside & (pop > 0), pop, 0.0)
+    if pop.sum() == 0:
+        return None
 
     rows, cols = pop.shape
     res_lon, res_lat = transform.a, transform.e  # res_lat is negative (north-up)
@@ -131,11 +176,18 @@ def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict
 def main() -> None:
     ensure_raster()
     answers = {}
+    skipped = []
     density_dir = DATA_DIR / "density"
     density_dir.mkdir(exist_ok=True)
+    for old in density_dir.glob("*.json"):
+        old.unlink()
     with rasterio.open(RASTER_PATH) as src:
         for t in TERRITORIES:
-            a, density = center_of_mass(src, get_shape(t.id))
+            computed = center_of_mass(src, get_shape(t.id))
+            if computed is None:
+                skipped.append(t.name)
+                continue
+            a, density = computed
             answers[t.id] = a
             (density_dir / f"{t.id}.json").write_text(json.dumps(density) + "\n")
             print(f"{t.name:<12} {a['lat']:8.3f}, {a['lon']:9.3f}  pop {a['population']:>13,}  area {a['area_km2']:>9,} km²")
@@ -148,7 +200,9 @@ def main() -> None:
         )
         + "\n"
     )
-    print(f"Wrote {out.relative_to(Path(__file__).parent)}")
+    print(f"Wrote {out.relative_to(Path(__file__).parent)}: {len(answers)} territories")
+    if skipped:
+        print(f"Skipped (no population): {', '.join(skipped)}")
 
 
 if __name__ == "__main__":

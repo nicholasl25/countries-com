@@ -37,7 +37,9 @@ export function renderHeatmap(map: MapProjection, grid: DensityGrid, scale = 2):
     for (let px = 0; px < canvas.width; px++) {
       const p = map.unproject((px + 0.5) / scale, (py + 0.5) / scale)
       if (!p) continue
-      const col = Math.floor((p.lon - grid.west) / cellLon)
+      // Grids for territories crossing the antimeridian run past 180° east.
+      const lon = p.lon < grid.west ? p.lon + 360 : p.lon
+      const col = Math.floor((lon - grid.west) / cellLon)
       const row = Math.floor((grid.north - p.lat) / cellLat)
       if (col < 0 || row < 0 || col >= grid.width || row >= grid.height) continue
       const v = values[row * grid.width + col]

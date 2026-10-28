@@ -2,14 +2,23 @@
 
 Borders are TopoJSON files from the `us-atlas` and `world-atlas` npm packages
 (Natural Earth / US Census data), copied into `data/borders/`.
+
+Countries come from `data/countries.csv` (display name, name in the border
+file, continent) — edit it to rename a country, move it to another continent,
+or remove it. Continents were seeded from the UN M49 regions. US states are
+all 50 states in the us-atlas file.
 """
 
+import csv
 import json
+import re
+import unicodedata
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
 
-BORDERS_DIR = Path(__file__).parent / "data" / "borders"
+DATA_DIR = Path(__file__).parent / "data"
+BORDERS_DIR = DATA_DIR / "borders"
 
 SOURCES = {
     # source name -> (file, object name inside the TopoJSON)
@@ -19,46 +28,63 @@ SOURCES = {
     "world-preview": ("world-countries-110m.json", "countries"),
 }
 
+# Order catalog groups are listed in.
+CATEGORIES = ["Countries", "US States", "Africa", "Asia", "Europe", "North America", "Oceania", "South America"]
+
 
 @dataclass(frozen=True)
 class Territory:
     id: str
     name: str
     source: str  # key of SOURCES
-    continent: str
+    atlas_name: str  # name in the border file
+    continent: str | None = None  # countries only
 
     @property
     def region(self) -> str:
         """Subtitle shown under the name."""
-        return "United States" if self.source == "states" else self.continent
+        return "United States" if self.source == "states" else self.continent or ""
 
     @property
     def categories(self) -> list[str]:
         """Catalog groups this territory appears in."""
-        return ["US States" if self.source == "states" else "Countries", self.continent]
-
-
-# Order catalog groups are listed in.
-CATEGORIES = ["Countries", "US States", "Africa", "Asia", "Europe", "North America", "Oceania", "South America"]
-
-TERRITORIES = [
-    Territory("us-colorado", "Colorado", "states", "North America"),
-    Territory("us-texas", "Texas", "states", "North America"),
-    Territory("us-california", "California", "states", "North America"),
-    Territory("poland", "Poland", "countries", "Europe"),
-    Territory("germany", "Germany", "countries", "Europe"),
-    Territory("egypt", "Egypt", "countries", "Africa"),
-    Territory("brazil", "Brazil", "countries", "South America"),
-    Territory("india", "India", "countries", "Asia"),
-]
-
-TERRITORIES_BY_ID = {t.id: t for t in TERRITORIES}
+        if self.source == "states":
+            return ["US States"]
+        return ["Countries", self.continent] if self.continent else ["Countries"]
 
 
 @cache
 def _load_topology(source: str) -> dict:
     filename, _ = SOURCES[source]
     return json.loads((BORDERS_DIR / filename).read_text())
+
+
+def _slug(name: str) -> str:
+    ascii_name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", ascii_name.lower()).strip("-")
+
+
+def _us_states() -> list[Territory]:
+    geometries = _load_topology("states")["objects"]["states"]["geometries"]
+    # FIPS codes 01–56 are the 50 states plus DC (11); above 56 are territories.
+    return [
+        Territory(f"us-{_slug(g['properties']['name'])}", g["properties"]["name"], "states", g["properties"]["name"])
+        for g in geometries
+        if g["id"] <= "56" and g["id"] != "11"
+    ]
+
+
+def _countries() -> list[Territory]:
+    with open(DATA_DIR / "countries.csv", newline="") as f:
+        return [
+            Territory(_slug(row["name"]), row["name"], "countries", row["atlas_name"], row["continent"])
+            for row in csv.DictReader(f)
+        ]
+
+
+TERRITORIES = sorted(_us_states() + _countries(), key=lambda t: t.name)
+TERRITORIES_BY_ID = {t.id: t for t in TERRITORIES}
+assert len(TERRITORIES_BY_ID) == len(TERRITORIES), "Territory ids must be unique"
 
 
 def _decode_arc(topology: dict, index: int) -> list[list[float]]:
@@ -104,9 +130,9 @@ def get_shape(territory_id: str) -> dict:
     topology = _load_topology(t.source)
     _, object_name = SOURCES[t.source]
     geometries = topology["objects"][object_name]["geometries"]
-    geom = next((g for g in geometries if g.get("properties", {}).get("name") == t.name), None)
+    geom = next((g for g in geometries if g.get("properties", {}).get("name") == t.atlas_name), None)
     if geom is None:
-        raise KeyError(f'No border data for "{t.name}".')
+        raise KeyError(f'No border data for "{t.atlas_name}".')
 
     return {
         "type": "Feature",

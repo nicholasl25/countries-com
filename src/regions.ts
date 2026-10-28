@@ -13,7 +13,7 @@ export type Region = {
 
 export const REGIONS: Region[] = [
   { title: 'Europe', category: 'Europe', itemLabel: 'Countries', bounds: [-12, 35, 42, 66] },
-  { title: 'North America', category: 'North America', itemLabel: 'Countries & states', bounds: [-135, 12, -55, 62] },
+  { title: 'North America', category: 'North America', itemLabel: 'Countries', bounds: [-135, 12, -55, 62] },
   { title: 'South America', category: 'South America', itemLabel: 'Countries', bounds: [-84, -45, -34, 12] },
   { title: 'World', category: 'Countries', itemLabel: 'Countries', bounds: [-165, -50, 175, 75] },
   { title: 'Africa', category: 'Africa', itemLabel: 'Countries', bounds: [-20, -36, 52, 38] },

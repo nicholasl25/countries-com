@@ -1,7 +1,6 @@
 import {
   geoAzimuthalEqualArea,
   geoCentroid,
-  geoContains,
   geoPath,
   type GeoProjection,
 } from 'd3-geo'
@@ -20,8 +19,6 @@ export type MapProjection = {
   toXY(p: LatLon): { x: number; y: number }
   /** Inverse of `toXY`, whether or not the point is inside the territory. */
   unproject(x: number, y: number): LatLon | null
-  /** Returns null if the point is outside the territory. */
-  toLatLon(x: number, y: number): LatLon | null
 }
 
 export function createMapProjection(shape: TerritoryShape): MapProjection {
@@ -45,10 +42,6 @@ export function createMapProjection(shape: TerritoryShape): MapProjection {
     unproject(x, y) {
       const lonLat = projection.invert?.([x, y])
       return lonLat ? { lon: lonLat[0], lat: lonLat[1] } : null
-    },
-    toLatLon(x, y) {
-      const p = this.unproject(x, y)
-      return p && geoContains(shape, [p.lon, p.lat]) ? p : null
     },
   }
 }
