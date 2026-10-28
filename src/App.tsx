@@ -167,37 +167,30 @@ export default function App() {
                 </>
               )}
 
+              {phase === 'scored' && guessXY && comXY && (
+                <line
+                  className="com-link"
+                  x1={guessXY.x}
+                  y1={guessXY.y}
+                  x2={comXY.x}
+                  y2={comXY.y}
+                />
+              )}
+
               {guessXY && (
-                <g className="pin pin-guess">
-                  <circle cx={guessXY.x} cy={guessXY.y} r="10" className="pin-ring" />
-                  <circle cx={guessXY.x} cy={guessXY.y} r="4.5" className="pin-core guess" />
+                <g transform={`translate(${guessXY.x} ${guessXY.y})`} aria-label="Your guess">
+                  <g className="pin pin-guess">
+                    <path className="guess-x-halo" d="M -6 -6 L 6 6 M 6 -6 L -6 6" />
+                    <path className="guess-x" d="M -6 -6 L 6 6 M 6 -6 L -6 6" />
+                  </g>
                 </g>
               )}
 
-              {phase === 'scored' && guessXY && comXY && (
-                <>
-                  <line
-                    className="com-link"
-                    x1={guessXY.x}
-                    y1={guessXY.y}
-                    x2={comXY.x}
-                    y2={comXY.y}
-                  />
-                  <g className="pin pin-com">
-                    <circle
-                      cx={comXY.x}
-                      cy={comXY.y}
-                      r="12"
-                      className="pin-ring com"
-                    />
-                    <circle
-                      cx={comXY.x}
-                      cy={comXY.y}
-                      r="5"
-                      className="pin-core com"
-                    />
-                  </g>
-                </>
+              {phase === 'scored' && comXY && (
+                <g className="pin pin-com" aria-label="True center of mass">
+                  <circle cx={comXY.x} cy={comXY.y} r="12" className="pin-ring com" />
+                  <circle cx={comXY.x} cy={comXY.y} r="5" className="pin-core com" />
+                </g>
               )}
             </svg>
           )}

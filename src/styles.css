@@ -184,8 +184,20 @@ button {
   stroke-width: 1.5;
 }
 
-.pin-core.guess {
-  fill: #fff;
+.guess-x,
+.guess-x-halo {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.guess-x {
+  stroke: #000;
+  stroke-width: 3;
+}
+
+.guess-x-halo {
+  stroke: #fff;
+  stroke-width: 6;
 }
 
 .pin-core.com {
