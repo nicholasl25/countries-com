@@ -9,9 +9,14 @@ Each grid cell's population is treated as a point mass on the sphere at the
 cell center. The CoM is the weighted mean of those 3D unit vectors, projected
 back onto the surface. The territory's area (used for scoring) is the summed
 area of the cells inside it.
+
+It also writes `data/density/<id>.json`: a coarse population-density grid the
+frontend draws as a heat map after a guess.
 """
 
+import base64
 import json
+import math
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -32,6 +37,7 @@ RASTER_URL = (
     f"GHS_POP_E2025_GLOBE_R2023A_4326_30ss/V1-0/{RASTER_NAME}.zip"
 )
 EARTH_RADIUS_KM = 6371.0
+DENSITY_MAX_CELLS = 256  # grid cells along the longer side of the heat map
 
 
 def ensure_raster() -> None:
@@ -56,7 +62,38 @@ def bounds(shape: dict) -> tuple[float, float, float, float]:
     return west, south, east, north
 
 
-def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> dict:
+def density_grid(pop: np.ndarray, area: np.ndarray, transform) -> dict:
+    """Downsample people and inside-area per cell into blocks, then encode
+    log-scaled people/km² as one byte per block: 0 = outside or empty,
+    1–255 = low to high. The color range is stretched between the territory's
+    5th and 99.5th percentile so both sparse and crowded places show contrast."""
+    rows, cols = pop.shape
+    f = max(1, math.ceil(max(rows, cols) / DENSITY_MAX_CELLS))
+    out_rows, out_cols = math.ceil(rows / f), math.ceil(cols / f)
+
+    def blocks(a: np.ndarray) -> np.ndarray:
+        a = np.pad(a, ((0, out_rows * f - rows), (0, out_cols * f - cols)))
+        return a.reshape(out_rows, f, out_cols, f).sum(axis=(1, 3))
+
+    people, km2 = blocks(pop), blocks(area)
+    density = np.divide(people, km2, out=np.zeros_like(people), where=km2 > 0)
+    level = np.log1p(density)
+    low, high = np.percentile(level[level > 0], [5, 99.5]) if np.any(level > 0) else (0.0, 1.0)
+    scaled = np.clip((level - low) / max(high - low, 1e-9), 0, 1)
+    values = np.where(level > 0, 1 + np.round(254 * scaled), 0).astype(np.uint8)
+
+    return {
+        "west": transform.c,
+        "north": transform.f,
+        "east": transform.c + out_cols * f * transform.a,
+        "south": transform.f + out_rows * f * transform.e,
+        "width": out_cols,
+        "height": out_rows,
+        "values": base64.b64encode(values.tobytes()).decode(),
+    }
+
+
+def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict]:
     window = from_bounds(*bounds(shape), transform=src.transform).round_offsets().round_lengths()
     pop = src.read(1, window=window, masked=True).filled(0).astype(np.float64)
     transform = src.window_transform(window)
@@ -82,21 +119,25 @@ def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> dict:
     cell_area = EARTH_RADIUS_KM**2 * np.radians(res_lon) * (np.sin(lat_top) - np.sin(lat_top + np.radians(res_lat)))
     area_km2 = float(np.sum(cell_area * inside.sum(axis=1)))
 
-    return {
+    answer = {
         "lat": round(float(np.degrees(np.arctan2(z, np.hypot(x, y)))), 4),
         "lon": round(float(np.degrees(np.arctan2(y, x))), 4),
         "population": int(round(pop.sum())),
         "area_km2": round(area_km2),
     }
+    return answer, density_grid(pop, inside * cell_area[:, None], transform)
 
 
 def main() -> None:
     ensure_raster()
     answers = {}
+    density_dir = DATA_DIR / "density"
+    density_dir.mkdir(exist_ok=True)
     with rasterio.open(RASTER_PATH) as src:
         for t in TERRITORIES:
-            a = center_of_mass(src, get_shape(t.id))
+            a, density = center_of_mass(src, get_shape(t.id))
             answers[t.id] = a
+            (density_dir / f"{t.id}.json").write_text(json.dumps(density) + "\n")
             print(f"{t.name:<12} {a['lat']:8.3f}, {a['lon']:9.3f}  pop {a['population']:>13,}  area {a['area_km2']:>9,} km²")
 
     out = DATA_DIR / "answers.json"

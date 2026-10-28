@@ -36,20 +36,20 @@ src/            frontend (never sees population data or answers up front)
   geo.ts        lat/lon <-> SVG projection for one territory
 backend/        Python
   territories.py  playable territories + their borders (TopoJSON in data/borders/)
-  compute_com.py  offline: population raster -> data/answers.json
+  compute_com.py  offline: population raster -> data/answers.json + data/density/*.json
   main.py         FastAPI app
 ```
 
 API (all lat/lon; errors return `{ "error": "message" }`):
 
 - `GET  /api/territory` → `{ id, name, region, shape }`, where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
-- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score }`
+- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score, density }`, where `density` is a coarse population-density grid (≤256 cells on the long side) the frontend draws as a heat map
 
 Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other than `/api`.
 
 ### How the center of mass is computed
 
-Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. To add a territory, add it to `TERRITORIES` in `backend/territories.py` and rerun `npm run data:com`. Borders come from the `us-atlas` / `world-atlas` npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
+Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. The same pass writes a downsampled, log-scaled density grid per territory to `data/density/` for the heat map. After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory. To add a territory, add it to `TERRITORIES` in `backend/territories.py` and rerun `npm run data:com`. Borders come from the `us-atlas` / `world-atlas` npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
 
 ## Stack
 

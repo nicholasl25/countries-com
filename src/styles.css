@@ -140,6 +140,33 @@ button {
   vector-effect: non-scaling-stroke;
 }
 
+.territory-edge {
+  fill: none;
+  stroke: var(--land-stroke);
+  stroke-width: 2.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.heatmap {
+  animation: fade-in 500ms ease both;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.legend-bar {
+  width: 9rem;
+  height: 0.5rem;
+  border: 1px solid #000;
+}
+
 .pin-ring {
   fill: none;
   stroke: #fff;
@@ -148,7 +175,8 @@ button {
 }
 
 .pin-ring.com {
-  stroke: var(--com);
+  stroke: #000;
+  stroke-width: 2.5;
 }
 
 .pin-core {
@@ -363,6 +391,15 @@ button {
   }
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: 100% 0;
@@ -391,6 +428,7 @@ button {
   .pin-guess,
   .pin-com,
   .com-link,
+  .heatmap,
   .result,
   .skeleton-map {
     animation: none !important;

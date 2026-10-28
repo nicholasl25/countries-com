@@ -25,6 +25,18 @@ export type Territory = {
   shape: TerritoryShape
 }
 
+/** Population density on a lat/lon grid (row 0 = north), for the heat map. */
+export type DensityGrid = {
+  west: number
+  south: number
+  east: number
+  north: number
+  width: number
+  height: number
+  /** Base64, one byte per cell: 0 = no people, 1–255 = log-scaled density, low to high */
+  values: string
+}
+
 export type GuessResult = {
   /** The true population-weighted center of mass */
   trueCom: LatLon
@@ -32,6 +44,7 @@ export type GuessResult = {
   distanceKm: number
   /** 0–1000 */
   score: number
+  density: DensityGrid
 }
 
 export interface GameApi {

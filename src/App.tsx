@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { useEffect, useId, useMemo, useState, type MouseEvent } from 'react'
 import { api, type GuessResult, type LatLon, type Territory } from './api'
 import { createMapProjection, MAP_HEIGHT, MAP_WIDTH } from './geo'
+import { HEAT_STOPS, renderHeatmap } from './heatmap'
 import './styles.css'
 
 type Phase = 'loading' | 'ready' | 'submitting' | 'scored' | 'error'
@@ -14,7 +15,12 @@ export default function App() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [outsideHint, setOutsideHint] = useState(false)
 
+  const clipId = `land-${useId().replace(/:/g, '')}`
   const map = useMemo(() => (territory ? createMapProjection(territory.shape) : null), [territory])
+  const heatmap = useMemo(
+    () => (map && result ? renderHeatmap(map, result.density) : null),
+    [map, result],
+  )
 
   function fetchTerritory() {
     setPhase('loading')
@@ -138,7 +144,28 @@ export default function App() {
                 height={MAP_HEIGHT}
               />
 
+              <defs>
+                <clipPath id={clipId}>
+                  <path d={map.path} />
+                </clipPath>
+              </defs>
+
               <path className="territory" d={map.path} />
+
+              {phase === 'scored' && heatmap && (
+                <>
+                  <image
+                    className="heatmap"
+                    href={heatmap}
+                    x="0"
+                    y="0"
+                    width={MAP_WIDTH}
+                    height={MAP_HEIGHT}
+                    clipPath={`url(#${clipId})`}
+                  />
+                  <path className="territory-edge" d={map.path} />
+                </>
+              )}
 
               {guessXY && (
                 <g className="pin pin-guess">
@@ -204,6 +231,14 @@ export default function App() {
                 {km < 1 ? 'Less than 1 km' : `${km.toFixed(0)} km`} from the true{' '}
                 <span className="nowrap">center of mass (CoM)</span>
               </p>
+              <div className="legend" aria-hidden="true">
+                <span>Fewer people</span>
+                <span
+                  className="legend-bar"
+                  style={{ background: `linear-gradient(90deg, ${HEAT_STOPS.join(', ')})` }}
+                />
+                <span>More</span>
+              </div>
               <div className="actions">
                 <button type="button" className="btn" onClick={playAgain}>
                   Guess again

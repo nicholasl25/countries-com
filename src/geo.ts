@@ -18,6 +18,8 @@ const PADDING = 16
 export type MapProjection = {
   path: string
   toXY(p: LatLon): { x: number; y: number }
+  /** Inverse of `toXY`, whether or not the point is inside the territory. */
+  unproject(x: number, y: number): LatLon | null
   /** Returns null if the point is outside the territory. */
   toLatLon(x: number, y: number): LatLon | null
 }
@@ -40,10 +42,13 @@ export function createMapProjection(shape: TerritoryShape): MapProjection {
       const [x, y] = projection([lon, lat]) ?? [NaN, NaN]
       return { x, y }
     },
-    toLatLon(x, y) {
+    unproject(x, y) {
       const lonLat = projection.invert?.([x, y])
-      if (!lonLat || !geoContains(shape, lonLat)) return null
-      return { lon: lonLat[0], lat: lonLat[1] }
+      return lonLat ? { lon: lonLat[0], lat: lonLat[1] } : null
+    },
+    toLatLon(x, y) {
+      const p = this.unproject(x, y)
+      return p && geoContains(shape, [p.lon, p.lat]) ? p : null
     },
   }
 }
