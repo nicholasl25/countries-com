@@ -4,47 +4,53 @@ import { useSyncExternalStore } from 'react'
  * Hash-based routes, so the app works from any static host without server
  * rewrites:
  *
- *   #/random              random game
- *   #/play/<id>           game on a specific territory
- *   #/catalog?c=<group>   catalog, optionally on a category
- *   #/catalog/<id>        one territory's heat map and answer
- *   #/daily               daily game (not built yet)
+ *   #/random[?c=<group>]       random game, optionally within a catalog group
+ *   #/play/<id>                game on a specific territory
+ *   #/catalog                  region cards
+ *   #/catalog?c=<group>        territories in one group
+ *   #/catalog/<id>[?c=<group>] one territory's heat map and answer
+ *   #/daily                    daily game (not built yet)
  */
 export type Route =
-  | { page: 'random' }
+  | { page: 'random'; category: string | null }
   | { page: 'play'; id: string }
   | { page: 'catalog'; category: string | null }
-  | { page: 'territory'; id: string }
+  | { page: 'territory'; id: string; category: string | null }
   | { page: 'daily' }
 
 export function parseRoute(hash: string): Route {
   const [path, query = ''] = hash.replace(/^#/, '').split('?')
   const parts = path.split('/').filter(Boolean).map(decodeURIComponent)
+  const category = new URLSearchParams(query).get('c')
 
   switch (parts[0]) {
     case 'play':
-      return parts[1] ? { page: 'play', id: parts[1] } : { page: 'random' }
+      return parts[1] ? { page: 'play', id: parts[1] } : { page: 'random', category: null }
     case 'catalog':
       return parts[1]
-        ? { page: 'territory', id: parts[1] }
-        : { page: 'catalog', category: new URLSearchParams(query).get('c') }
+        ? { page: 'territory', id: parts[1], category }
+        : { page: 'catalog', category }
     case 'daily':
       return { page: 'daily' }
     default:
-      return { page: 'random' }
+      return { page: 'random', category }
   }
+}
+
+function withCategory(path: string, category: string | null): string {
+  return category ? `${path}?c=${encodeURIComponent(category)}` : path
 }
 
 export function routeHref(route: Route): string {
   switch (route.page) {
     case 'random':
-      return '#/random'
+      return withCategory('#/random', route.category)
     case 'play':
       return `#/play/${encodeURIComponent(route.id)}`
     case 'catalog':
-      return route.category ? `#/catalog?c=${encodeURIComponent(route.category)}` : '#/catalog'
+      return withCategory('#/catalog', route.category)
     case 'territory':
-      return `#/catalog/${encodeURIComponent(route.id)}`
+      return withCategory(`#/catalog/${encodeURIComponent(route.id)}`, route.category)
     case 'daily':
       return '#/daily'
   }

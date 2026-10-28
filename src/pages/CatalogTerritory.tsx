@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import { api, type CatalogDetail } from '../api'
 import { HeatLegend, TerritoryMap } from '../components/TerritoryMap'
+import { regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
 type Props = {
   id: string
+  /** Category the user came from, for the back link */
+  category: string | null
 }
 
 function formatCoord(value: number, positive: string, negative: string): string {
   return `${Math.abs(value).toFixed(2)}° ${value >= 0 ? positive : negative}`
 }
 
-export function CatalogTerritory({ id }: Props) {
+export function CatalogTerritory({ id, category }: Props) {
   const [detail, setDetail] = useState<CatalogDetail | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,8 +31,8 @@ export function CatalogTerritory({ id }: Props) {
 
   return (
     <div className="catalog-detail rise">
-      <a className="back-link" href={routeHref({ page: 'catalog', category: null })}>
-        ← Catalog
+      <a className="back-link" href={routeHref({ page: 'catalog', category })}>
+        ← {category ? (regionForCategory(category)?.title ?? category) : 'Catalog'}
       </a>
 
       <div className={`board${detail ? '' : ' is-loading'}`}>

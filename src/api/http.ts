@@ -6,17 +6,20 @@ import {
   type GuessResult,
   type LatLon,
   type Territory,
+  type TerritoryQuery,
+  type WorldMap,
 } from './types'
 
 /**
  * HTTP implementation of `GameApi`. Routes the backend needs to provide
  * (all JSON, relative to `baseUrl`):
  *
- *   GET  /territory[?id=]  -> Territory (with GeoJSON `shape`)
+ *   GET  /territory[?id=|?category=]  -> Territory (with GeoJSON `shape`)
  *   POST /guess            -> GuessResult
  *        body: { territoryId: string, guess: { lat, lon } }
  *   GET  /catalog          -> Catalog
  *   GET  /catalog/{id}     -> CatalogDetail
+ *   GET  /world            -> WorldMap
  *
  * Non-2xx responses may include `{ "error": "message" }`.
  */
@@ -42,8 +45,13 @@ export function createHttpApi(baseUrl: string): GameApi {
   }
 
   return {
-    getTerritory: (id?: string) =>
-      request<Territory>(id ? `/territory?id=${encodeURIComponent(id)}` : '/territory'),
+    getTerritory: (query: TerritoryQuery = {}) => {
+      const params = new URLSearchParams()
+      if (query.id) params.set('id', query.id)
+      if (query.category) params.set('category', query.category)
+      const qs = params.toString()
+      return request<Territory>(qs ? `/territory?${qs}` : '/territory')
+    },
     submitGuess: (territoryId: string, guess: LatLon) =>
       request<GuessResult>('/guess', {
         method: 'POST',
@@ -52,5 +60,6 @@ export function createHttpApi(baseUrl: string): GameApi {
     getCatalog: () => request<Catalog>('/catalog'),
     getCatalogDetail: (id: string) =>
       request<CatalogDetail>(`/catalog/${encodeURIComponent(id)}`),
+    getWorld: () => request<WorldMap>('/world'),
   }
 }

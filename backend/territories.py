@@ -15,6 +15,8 @@ SOURCES = {
     # source name -> (file, object name inside the TopoJSON)
     "states": ("us-states-10m.json", "states"),
     "countries": ("world-countries-50m.json", "countries"),
+    # Low-detail world map for catalog previews only.
+    "world-preview": ("world-countries-110m.json", "countries"),
 }
 
 
@@ -85,6 +87,16 @@ def _decode_ring(topology: dict, arc_indexes: list[int]) -> list[list[float]]:
     return ring
 
 
+def _decode_geometry(topology: dict, geom: dict) -> dict:
+    if geom["type"] == "Polygon":
+        coordinates = [_decode_ring(topology, ring) for ring in geom["arcs"]]
+    elif geom["type"] == "MultiPolygon":
+        coordinates = [[_decode_ring(topology, ring) for ring in poly] for poly in geom["arcs"]]
+    else:
+        raise ValueError(f'Unsupported geometry type {geom["type"]}.')
+    return {"type": geom["type"], "coordinates": coordinates}
+
+
 @cache
 def get_shape(territory_id: str) -> dict:
     """GeoJSON Feature (Polygon or MultiPolygon) for a territory."""
@@ -96,15 +108,35 @@ def get_shape(territory_id: str) -> dict:
     if geom is None:
         raise KeyError(f'No border data for "{t.name}".')
 
-    if geom["type"] == "Polygon":
-        coordinates = [_decode_ring(topology, ring) for ring in geom["arcs"]]
-    elif geom["type"] == "MultiPolygon":
-        coordinates = [[_decode_ring(topology, ring) for ring in poly] for poly in geom["arcs"]]
-    else:
-        raise ValueError(f'Unsupported geometry type {geom["type"]} for "{t.name}".')
-
     return {
         "type": "Feature",
         "properties": {"name": t.name},
-        "geometry": {"type": geom["type"], "coordinates": coordinates},
+        "geometry": _decode_geometry(topology, geom),
+    }
+
+
+def _round_coords(coords, digits: int):
+    if isinstance(coords[0], (int, float)):
+        return [round(c, digits) for c in coords]
+    return [_round_coords(c, digits) for c in coords]
+
+
+@cache
+def get_world_preview() -> dict:
+    """Every country at low detail, as a GeoJSON FeatureCollection."""
+    topology = _load_topology("world-preview")
+    _, object_name = SOURCES["world-preview"]
+    return {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"name": g.get("properties", {}).get("name")},
+                "geometry": {
+                    "type": g["type"],
+                    "coordinates": _round_coords(_decode_geometry(topology, g)["coordinates"], 2),
+                },
+            }
+            for g in topology["objects"][object_name]["geometries"]
+        ],
     }

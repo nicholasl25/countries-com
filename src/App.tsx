@@ -6,7 +6,7 @@ import './styles.css'
 
 const MENU: { label: string; route: Route; matches: Route['page'][]; soon?: boolean }[] = [
   { label: 'Daily Game', route: { page: 'daily' }, matches: ['daily'], soon: true },
-  { label: 'Random', route: { page: 'random' }, matches: ['random', 'play'] },
+  { label: 'Random', route: { page: 'random', category: null }, matches: ['random', 'play'] },
   { label: 'Catalog', route: { page: 'catalog', category: null }, matches: ['catalog', 'territory'] },
 ]
 
@@ -19,7 +19,7 @@ export default function App() {
 
       <header className="mast">
         <div className="mast-inner">
-        <a className="brand" href={routeHref({ page: 'random' })}>
+        <a className="brand" href={routeHref({ page: 'random', category: null })}>
           Countries<span className="brand-dot">.</span>CoM (Center of Mass)
         </a>
         <nav className="menu" aria-label="Main">
@@ -42,15 +42,19 @@ export default function App() {
       </header>
 
       <main className="stage">
-        {route.page === 'random' && <RandomGame key="random" />}
+        {route.page === 'random' && (
+          <RandomGame key={`random-${route.category ?? ''}`} category={route.category} />
+        )}
         {route.page === 'play' && <RandomGame key={`play-${route.id}`} territoryId={route.id} />}
         {route.page === 'catalog' && <Catalog category={route.category} />}
-        {route.page === 'territory' && <CatalogTerritory id={route.id} />}
+        {route.page === 'territory' && (
+          <CatalogTerritory id={route.id} category={route.category} />
+        )}
         {route.page === 'daily' && (
           <div className="state rise">
             <p className="state-title">Daily Game</p>
             <p className="state-body">Coming soon — one territory a day, same for everyone.</p>
-            <a className="btn" href={routeHref({ page: 'random' })}>
+            <a className="btn" href={routeHref({ page: 'random', category: null })}>
               Play Random instead
             </a>
           </div>

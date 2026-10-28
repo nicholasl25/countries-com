@@ -33,7 +33,8 @@ The precomputed answers are committed in `backend/data/answers.json`, so you don
 src/            frontend (never sees population data or answers up front)
   App.tsx       header menu + page switch (hash routes, see router.ts)
   pages/        RandomGame, Catalog, CatalogTerritory
-  components/   TerritoryMap (outline, heat map, guess X, CoM dot)
+  components/   TerritoryMap (outline, heat map, guess X, CoM dot), RegionCard
+  regions.ts    catalog region cards (title, category, preview bounds)
   api/types.ts  the API contract shared with the server
   api/http.ts   fetch client
   geo.ts        lat/lon <-> SVG projection for one territory
@@ -46,11 +47,12 @@ backend/        Python
 
 API (all lat/lon; errors return `{ "error": "message" }`):
 
-- `GET  /api/territory[?id=]` → `{ id, name, region, shape }` (random unless `id` is given), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
+- `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
 - `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score, density }`, where `density` is a coarse population-density grid (≤256 cells on the long side) the frontend draws as a heat map
 
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories }] }`
 - `GET  /api/catalog/{id}` → `{ territory, trueCom, population, areaKm2, density }` — the catalog intentionally shows the answer
+- `GET  /api/world` → low-detail world map (GeoJSON, ~50 KB gzipped) for the catalog's region previews
 
 Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other than `/api`.
 

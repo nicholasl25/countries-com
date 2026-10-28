@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react'
-import { api, type Catalog as CatalogData } from '../api'
+import { useEffect, useMemo, useState } from 'react'
+import { api, type Catalog as CatalogData, type WorldMap } from '../api'
+import { RegionCard } from '../components/RegionCard'
+import { REGIONS, regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
 type Props = {
-  /** Selected category; null shows the first one. */
+  /** Show this category's territories; null shows the region cards. */
   category: string | null
 }
 
 export function Catalog({ category }: Props) {
   const [catalog, setCatalog] = useState<CatalogData | null>(null)
+  const [world, setWorld] = useState<WorldMap | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -16,7 +19,22 @@ export function Catalog({ category }: Props) {
       .getCatalog()
       .then(setCatalog)
       .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Something went wrong.'))
+    // The previews are decoration; the catalog works without them.
+    api.getWorld().then(setWorld, () => {})
   }, [])
+
+  const highlights = useMemo(
+    () =>
+      new Map(
+        REGIONS.map((r) => [
+          r.category,
+          new Set(
+            catalog?.territories.filter((t) => t.categories.includes(r.category)).map((t) => t.name),
+          ),
+        ]),
+      ),
+    [catalog],
+  )
 
   if (error) {
     return (
@@ -35,39 +53,58 @@ export function Catalog({ category }: Props) {
     )
   }
 
-  const active = category && catalog.categories.includes(category) ? category : catalog.categories[0]
-  const items = catalog.territories.filter((t) => t.categories.includes(active))
+  const inCategory = (c: string) => catalog.territories.filter((t) => t.categories.includes(c))
+
+  if (!category) {
+    return (
+      <div className="catalog rise">
+        <p className="instruction">See where people live — and where the center of mass lands.</p>
+        <div className="region-grid">
+          {REGIONS.map((r) => (
+            <RegionCard
+              key={r.title}
+              region={r}
+              world={world}
+              count={inCategory(r.category).length}
+              highlight={highlights.get(r.category) ?? new Set()}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const items = inCategory(category)
+  const title = regionForCategory(category)?.title ?? category
 
   return (
     <div className="catalog rise">
-      <p className="instruction">See where people live — and where the center of mass lands.</p>
-
-      <nav className="chips" aria-label="Categories">
-        {catalog.categories.map((c) => (
-          <a
-            key={c}
-            className={`chip${c === active ? ' is-active' : ''}`}
-            href={routeHref({ page: 'catalog', category: c })}
-            aria-current={c === active ? 'page' : undefined}
-          >
-            {c}
-            <span className="chip-count">
-              {catalog.territories.filter((t) => t.categories.includes(c)).length}
-            </span>
+      <div className="catalog-head">
+        <a className="back-link" href={routeHref({ page: 'catalog', category: null })}>
+          ← All regions
+        </a>
+        <h1 className="catalog-title">{title}</h1>
+        {items.length > 0 && (
+          <a className="btn btn-primary" href={routeHref({ page: 'random', category })}>
+            Play random
           </a>
-        ))}
-      </nav>
+        )}
+      </div>
 
-      <ul className="catalog-grid">
-        {items.map((t) => (
-          <li key={t.id}>
-            <a className="catalog-card" href={routeHref({ page: 'territory', id: t.id })}>
-              <span className="catalog-name">{t.name}</span>
-              <span className="catalog-region">{t.region}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <p className="state">Nothing here yet.</p>
+      ) : (
+        <ul className="catalog-grid">
+          {items.map((t) => (
+            <li key={t.id}>
+              <a className="catalog-card" href={routeHref({ page: 'territory', id: t.id, category })}>
+                <span className="catalog-name">{t.name}</span>
+                <span className="catalog-region">{t.region}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

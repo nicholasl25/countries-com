@@ -1,9 +1,10 @@
 """Game API. Implements the contract in `src/api/types.ts`:
 
-    GET  /api/territory[?id=]   -> Territory (random unless `id` is given)
+    GET  /api/territory[?id=|?category=]  -> Territory (random, optionally within a category)
     POST /api/guess             -> GuessResult   body: { territoryId, guess: { lat, lon } }
     GET  /api/catalog           -> Catalog       list of territories by category
     GET  /api/catalog/{id}      -> CatalogDetail territory + answer + heat map
+    GET  /api/world             -> low-detail world map (GeoJSON) for catalog previews
 
 Answers and density grids come from `data/` (see `compute_com.py`). In the game
 they only leave the server as part of a guess result; the catalog shows them
@@ -20,10 +21,11 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape
+from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape, get_world_preview
 
 EARTH_RADIUS_KM = 6371.0
 DATA_DIR = Path(__file__).parent / "data"
@@ -31,6 +33,7 @@ ANSWERS: dict[str, dict] = json.loads((DATA_DIR / "answers.json").read_text())["
 PLAYABLE = [t for t in TERRITORIES if t.id in ANSWERS]
 
 app = FastAPI(title="Countries.CoM API")
+app.add_middleware(GZipMiddleware)
 
 
 class LatLon(BaseModel):
@@ -88,8 +91,13 @@ def territory_json(territory_id: str) -> dict:
 
 
 @app.get("/api/territory")
-def get_territory(id: str | None = None) -> dict:
-    return territory_json(id or random.choice(PLAYABLE).id)
+def get_territory(id: str | None = None, category: str | None = None) -> dict:
+    if id:
+        return territory_json(id)
+    pool = [t for t in PLAYABLE if category is None or category in t.categories]
+    if not pool:
+        raise HTTPException(404, f'No territories in "{category}".')
+    return territory_json(random.choice(pool).id)
 
 
 @app.get("/api/catalog")
@@ -102,6 +110,11 @@ def get_catalog() -> dict:
             for t in sorted(PLAYABLE, key=lambda t: t.name)
         ],
     }
+
+
+@app.get("/api/world")
+def get_world() -> dict:
+    return get_world_preview()
 
 
 @app.get("/api/catalog/{territory_id}")

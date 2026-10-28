@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 import { api, type GuessResult, type LatLon, type Territory } from '../api'
 import { HeatLegend, TerritoryMap } from '../components/TerritoryMap'
-import { navigate } from '../router'
+import { regionForCategory } from '../regions'
+import { navigate, routeHref } from '../router'
 
 type Phase = 'loading' | 'ready' | 'submitting' | 'scored' | 'error'
 
 type Props = {
   /** Play this territory first instead of a random one. */
   territoryId?: string
+  /** Only pick random territories from this catalog category. */
+  category?: string | null
 }
 
-export function RandomGame({ territoryId }: Props) {
+export function RandomGame({ territoryId, category }: Props) {
   const [phase, setPhase] = useState<Phase>('loading')
   const [territory, setTerritory] = useState<Territory | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -20,6 +23,7 @@ export function RandomGame({ territoryId }: Props) {
   const [outsideHint, setOutsideHint] = useState(false)
 
   function loadTerritory(id?: string) {
+    const query = id ? { id } : { category: category ?? undefined }
     setPhase('loading')
     setError(null)
     setGuess(null)
@@ -28,7 +32,7 @@ export function RandomGame({ territoryId }: Props) {
     setOutsideHint(false)
     setTerritory(null)
     api
-      .getTerritory(id)
+      .getTerritory(query)
       .then((t) => {
         setTerritory(t)
         setPhase('ready')
@@ -39,9 +43,9 @@ export function RandomGame({ territoryId }: Props) {
       })
   }
 
-  useEffect(() => {
-    loadTerritory(territoryId)
-  }, [territoryId])
+  // Remounted (via `key`) whenever the route's territory or category changes.
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => loadTerritory(territoryId), [])
 
   function onPick(point: LatLon | null) {
     if (phase !== 'ready' || !territory) return
@@ -68,7 +72,7 @@ export function RandomGame({ territoryId }: Props) {
   }
 
   function playAgain() {
-    if (territoryId) navigate({ page: 'random' })
+    if (territoryId) navigate({ page: 'random', category: null })
     else loadTerritory()
   }
 
@@ -86,6 +90,13 @@ export function RandomGame({ territoryId }: Props) {
           </>
         )}
       </p>
+
+      {category && (
+        <p className="playing-in">
+          Random · {regionForCategory(category)?.title ?? category}
+          <a href={routeHref({ page: 'random', category: null })}>All territories</a>
+        </p>
+      )}
 
       <div className={`board rise delay-2${phase === 'loading' ? ' is-loading' : ''}`}>
         {phase === 'loading' && (

@@ -1,4 +1,4 @@
-import type { Feature, MultiPolygon, Polygon } from 'geojson'
+import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson'
 
 /**
  * The contract between the frontend and the backend.
@@ -70,15 +70,27 @@ export type CatalogDetail = {
   density: DensityGrid
 }
 
+/** Low-detail outlines of every country, for catalog previews. */
+export type WorldMap = FeatureCollection<Polygon | MultiPolygon, { name: string | null }>
+
+export type TerritoryQuery = {
+  /** A specific territory */
+  id?: string
+  /** A random territory within this catalog category */
+  category?: string
+}
+
 export interface GameApi {
-  /** Fetch a territory to play: the given one, or a random one. */
-  getTerritory(id?: string): Promise<Territory>
+  /** Fetch a territory to play: a specific one, or a random one (optionally within a category). */
+  getTerritory(query?: TerritoryQuery): Promise<Territory>
   /** Submit a guess for a territory and get the scored result. */
   submitGuess(territoryId: string, guess: LatLon): Promise<GuessResult>
   /** List every territory, grouped into categories. */
   getCatalog(): Promise<Catalog>
   /** One territory with its answer and heat map. */
   getCatalogDetail(id: string): Promise<CatalogDetail>
+  /** Low-detail world map for catalog previews. */
+  getWorld(): Promise<WorldMap>
 }
 
 export class ApiError extends Error {
