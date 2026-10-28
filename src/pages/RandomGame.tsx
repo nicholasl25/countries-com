@@ -78,9 +78,7 @@ export function RandomGame({ territoryId }: Props) {
     <>
       <p className="instruction rise delay">
         {scored ? (
-          <>
-            Your guess versus the true population <span className="nowrap">center of mass (CoM)</span>.
-          </>
+          'Your guess versus the true population center'
         ) : (
           <>
             Click the map where you think the population{' '}
