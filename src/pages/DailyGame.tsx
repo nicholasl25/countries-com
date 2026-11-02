@@ -109,7 +109,7 @@ export function DailyGame() {
           </button>
         ) : (
           <button type="button" className="btn btn-primary" onClick={() => setIndex(current + 1)}>
-            Next round
+            Next round ›
           </button>
         )
       }

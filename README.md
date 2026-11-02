@@ -50,7 +50,7 @@ backend/        Python
 
 API (all lat/lon; errors return `{ "error": "message" }`):
 
-- `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
+- `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick to a catalog category or `100 Largest Countries` by area, the Random page's default), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
 - `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, ringsKm, distanceKm, score, density }` (`ringsKm` are the 1σ/2σ/3σ ring radii, see Scoring), where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
 
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories, mapName }] }` (`mapName` is the containing feature in `/api/world`)

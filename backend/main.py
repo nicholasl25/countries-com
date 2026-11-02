@@ -1,6 +1,7 @@
 """Game API. Implements the contract in `src/api/types.ts`:
 
-    GET  /api/territory[?id=|?category=]  -> Territory (random, optionally within a category)
+    GET  /api/territory[?id=|?category=]  -> Territory (random, optionally within a category
+                                             or "100 Largest Countries")
     POST /api/guess             -> GuessResult   body: { territoryId, guess: { lat, lon } }
     GET  /api/catalog           -> Catalog       list of territories by category
     GET  /api/catalog/{id}      -> CatalogDetail territory + answer + heat map
@@ -39,6 +40,25 @@ DATA_DIR = Path(__file__).parent / "data"
 DIST_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parent.parent / "dist"))
 ANSWERS: dict[str, dict] = json.loads((DATA_DIR / "answers.json").read_text())["answers"]
 PLAYABLE = [t for t in TERRITORIES if t.id in ANSWERS]
+
+# A random-play pool that isn't a catalog group: the largest countries by area.
+LARGEST_CATEGORY = "100 Largest Countries"
+LARGEST = {
+    t.id
+    for t in sorted(
+        (t for t in PLAYABLE if "Countries" in t.categories),
+        key=lambda t: ANSWERS[t.id]["area_km2"],
+        reverse=True,
+    )[:100]
+}
+
+
+def in_category(t, category: str | None) -> bool:
+    if not category:
+        return True
+    if category == LARGEST_CATEGORY:
+        return t.id in LARGEST
+    return category in t.categories
 
 
 def load_daily() -> dict[dt.date, list[str]]:
@@ -125,7 +145,7 @@ def territory_json(territory_id: str) -> dict:
 def get_territory(id: str | None = None, category: str | None = None) -> dict:
     if id:
         return territory_json(id)
-    pool = [t for t in PLAYABLE if category is None or category in t.categories]
+    pool = [t for t in PLAYABLE if in_category(t, category)]
     if not pool:
         raise HTTPException(404, f'No territories in "{category}".')
     return territory_json(random.choice(pool).id)

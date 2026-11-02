@@ -4,7 +4,8 @@ import { useSyncExternalStore } from 'react'
  * Hash-based routes, so the app works from any static host without server
  * rewrites:
  *
- *   #/random[?c=<group>]       random game, optionally within a catalog group
+ *   #/random[?c=<group>]       random game: 100 largest countries by default,
+ *                              `all`, or a catalog group (e.g. `US States`)
  *   #/play/<id>                game on a specific territory
  *   #/catalog                  region cards
  *   #/catalog?c=<group>        territories in one group
