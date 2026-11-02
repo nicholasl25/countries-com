@@ -10,8 +10,10 @@ cell center. The CoM is the weighted mean of those 3D unit vectors, projected
 back onto the surface. The territory's area (used for scoring) is the summed
 area of the cells inside it.
 
-It also writes `data/density/<id>.json`: a coarse population-density grid the
-frontend draws as a heat map after a guess.
+It also writes `data/density/<id>.json`: coarse population-density grids the
+frontend draws as a heat map after a guess. Territories with far-apart parts
+(France and its overseas departments, Kiribati...) get one grid per group of
+nearby parts, so each keeps full detail when zoomed in.
 """
 
 import base64
@@ -38,7 +40,8 @@ RASTER_URL = (
     f"GHS_POP_E2025_GLOBE_R2023A_4326_30ss/V1-0/{RASTER_NAME}.zip"
 )
 EARTH_RADIUS_KM = 6371.0
-DENSITY_MAX_CELLS = 256  # grid cells along the longer side of the heat map
+DENSITY_MAX_CELLS = 256  # grid cells along the longer side of each heat map grid
+CLUSTER_GAP_DEG = 1.0  # parts closer than this share a heat map grid
 
 
 def ensure_raster() -> None:
@@ -54,9 +57,12 @@ def ensure_raster() -> None:
         z.extractall(RAW_DIR)
 
 
+def _polygons(geometry: dict) -> list:
+    return [geometry["coordinates"]] if geometry["type"] == "Polygon" else geometry["coordinates"]
+
+
 def _points(geometry: dict) -> np.ndarray:
-    polygons = [geometry["coordinates"]] if geometry["type"] == "Polygon" else geometry["coordinates"]
-    return np.array([p for poly in polygons for ring in poly for p in ring])
+    return np.array([p for poly in _polygons(geometry) for ring in poly for p in ring])
 
 
 def bounds(geometry: dict) -> tuple[float, float, float, float]:
@@ -98,39 +104,82 @@ def read_window(src: rasterio.DatasetReader, west: float, south: float, east: fl
     return pop, src.transform * Affine.translation(col0, row0)
 
 
-def density_grid(pop: np.ndarray, area: np.ndarray, transform) -> dict:
-    """Downsample people and inside-area per cell into blocks, then encode
-    log-scaled people/km² as one byte per block: 0 = outside or empty,
-    1–255 = low to high. The color range is stretched between the territory's
-    5th and 99.5th percentile so both sparse and crowded places show contrast."""
+def clusters(geometry: dict) -> list[tuple[float, float, float, float]]:
+    """Bounding boxes of groups of polygons that lie within CLUSTER_GAP_DEG of
+    each other."""
+    boxes = [bounds({"type": "Polygon", "coordinates": p}) for p in _polygons(geometry)]
+
+    def near(a, b) -> bool:
+        g = CLUSTER_GAP_DEG
+        return a[0] - g <= b[2] and b[0] - g <= a[2] and a[1] - g <= b[3] and b[1] - g <= a[3]
+
+    merged = True
+    while merged:
+        merged = False
+        out: list[tuple[float, float, float, float]] = []
+        for box in boxes:
+            for i, other in enumerate(out):
+                if near(box, other):
+                    out[i] = (min(box[0], other[0]), min(box[1], other[1]), max(box[2], other[2]), max(box[3], other[3]))
+                    merged = True
+                    break
+            else:
+                out.append(box)
+        boxes = out
+    return boxes
+
+
+def density_grids(pop: np.ndarray, area: np.ndarray, transform, geometry: dict) -> list[dict]:
+    """One grid per cluster of the territory's parts. Each downsamples people
+    and inside-area per cell into blocks, then encodes log-scaled people/km² as
+    one byte per block: 0 = outside or empty, 1–255 = low to high. The color
+    range is stretched between the territory's 5th and 99.5th percentile (over
+    all its grids) so both sparse and crowded places show contrast."""
     rows, cols = pop.shape
-    f = max(1, math.ceil(max(rows, cols) / DENSITY_MAX_CELLS))
-    out_rows, out_cols = math.ceil(rows / f), math.ceil(cols / f)
+    grids = []
+    for west, south, east, north in clusters(geometry):
+        c0, r0 = ~transform * (west, north)
+        c1, r1 = ~transform * (east, south)
+        c0, r0 = max(0, math.floor(c0)), max(0, math.floor(r0))
+        c1, r1 = min(cols, math.ceil(c1)), min(rows, math.ceil(r1))
+        p, a = pop[r0:r1, c0:c1], area[r0:r1, c0:c1]
+        if p.sum() == 0:
+            continue
 
-    def blocks(a: np.ndarray) -> np.ndarray:
-        a = np.pad(a, ((0, out_rows * f - rows), (0, out_cols * f - cols)))
-        return a.reshape(out_rows, f, out_cols, f).sum(axis=(1, 3))
+        f = max(1, math.ceil(max(p.shape) / DENSITY_MAX_CELLS))
+        out_rows, out_cols = math.ceil(p.shape[0] / f), math.ceil(p.shape[1] / f)
 
-    people, km2 = blocks(pop), blocks(area)
-    density = np.divide(people, km2, out=np.zeros_like(people), where=km2 > 0)
-    level = np.log1p(density)
-    low, high = np.percentile(level[level > 0], [5, 99.5]) if np.any(level > 0) else (0.0, 1.0)
-    scaled = np.clip((level - low) / max(high - low, 1e-9), 0, 1)
-    values = np.where(level > 0, 1 + np.round(254 * scaled), 0).astype(np.uint8)
+        def blocks(x: np.ndarray) -> np.ndarray:
+            x = np.pad(x, ((0, out_rows * f - x.shape[0]), (0, out_cols * f - x.shape[1])))
+            return x.reshape(out_rows, f, out_cols, f).sum(axis=(1, 3))
 
-    return {
-        "west": transform.c,
-        "north": transform.f,
-        "east": transform.c + out_cols * f * transform.a,
-        "south": transform.f + out_rows * f * transform.e,
-        "width": out_cols,
-        "height": out_rows,
-        "values": base64.b64encode(values.tobytes()).decode(),
-    }
+        people, km2 = blocks(p), blocks(a)
+        density = np.divide(people, km2, out=np.zeros_like(people), where=km2 > 0)
+        grids.append((np.log1p(density), transform * Affine.translation(c0, r0), f))
+
+    every = np.concatenate([level[level > 0] for level, _, _ in grids])
+    low, high = np.percentile(every, [5, 99.5])
+    out = []
+    for level, t, f in grids:
+        scaled = np.clip((level - low) / max(high - low, 1e-9), 0, 1)
+        values = np.where(level > 0, 1 + np.round(254 * scaled), 0).astype(np.uint8)
+        out_rows, out_cols = level.shape
+        out.append(
+            {
+                "west": t.c,
+                "north": t.f,
+                "east": t.c + out_cols * f * t.a,
+                "south": t.f + out_rows * f * t.e,
+                "width": out_cols,
+                "height": out_rows,
+                "values": base64.b64encode(values.tobytes()).decode(),
+            }
+        )
+    return out
 
 
-def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict] | None:
-    """Returns (answer, density grid), or None if nobody lives there."""
+def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, list[dict]] | None:
+    """Returns (answer, density grids), or None if nobody lives there."""
     geometry = shape["geometry"]
     west, south, east, north = bounds(geometry)
     if east - west > 180:
@@ -170,7 +219,7 @@ def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, dict
         "population": int(round(pop.sum())),
         "area_km2": round(area_km2),
     }
-    return answer, density_grid(pop, inside * cell_area[:, None], transform)
+    return answer, density_grids(pop, inside * cell_area[:, None], transform, geometry)
 
 
 def main() -> None:

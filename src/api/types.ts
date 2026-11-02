@@ -46,7 +46,8 @@ export type GuessResult = {
   distanceKm: number
   /** 0–1000 */
   score: number
-  density: DensityGrid
+  /** One grid per group of nearby parts (e.g. mainland France, Réunion, …) */
+  density: DensityGrid[]
 }
 
 export type CatalogEntry = {
@@ -72,7 +73,7 @@ export type CatalogDetail = {
   trueCom: LatLon
   population: number
   areaKm2: number
-  density: DensityGrid
+  density: DensityGrid[]
 }
 
 /** One day's hand-picked rounds, the same for everyone. */

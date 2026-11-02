@@ -49,6 +49,7 @@ export function CatalogTerritory({ id, category }: Props) {
         )}
         {detail && territory && (
           <TerritoryMap
+            key={territory.id}
             shape={territory.shape}
             label={`Population heat map of ${territory.name}`}
             trueCom={detail.trueCom}

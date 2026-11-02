@@ -39,7 +39,7 @@ src/            frontend (never sees population data or answers up front)
   api/types.ts  the API contract shared with the server
   api/http.ts   fetch client
   geo.ts        lat/lon <-> SVG projection for one territory
-  heatmap.ts    draws a density grid in the map's projection
+  heatmap.ts    draws density grids in the map's projection
 backend/        Python
   territories.py  playable territories + their borders (TopoJSON in data/borders/)
   data/countries.csv  which world-atlas shapes are countries: display name + continent
@@ -51,7 +51,7 @@ backend/        Python
 API (all lat/lon; errors return `{ "error": "message" }`):
 
 - `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
-- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score, density }`, where `density` is a coarse population-density grid (≤256 cells on the long side) the frontend draws as a heat map
+- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score, density }`, where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
 
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories, mapName }] }` (`mapName` is the containing feature in `/api/world`)
 - `GET  /api/catalog/{id}` → `{ territory, trueCom, population, areaKm2, density }` — the catalog intentionally shows the answer
@@ -75,7 +75,7 @@ Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other 
 
 Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. That point can fall outside the territory (in the sea for archipelagos like Indonesia, or in a neighbor for Palestine), so guesses are accepted anywhere on the map. Territories crossing the 180° meridian (Alaska, Russia, Fiji, …) are shifted east before reading the raster, and territories smaller than one cell use every cell they touch. Uninhabited territories (e.g. Heard Island) and Antarctica are skipped.
 
-The same pass writes a downsampled, log-scaled density grid per territory to `data/density/` for the heat map. A full run takes under a minute and peaks around 3 GB of memory (Russia). After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory.
+The same pass writes downsampled, log-scaled density grids per territory to `data/density/` for the heat map: one grid per group of parts within 1° of each other, so far-flung pieces like France's overseas departments keep full detail when zoomed in (the map supports scroll/pinch zoom and drag; the heat map re-renders for the visible area). A full run takes under a minute and peaks around 3 GB of memory (Russia). After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory.
 
 To add or rename a country, edit `backend/data/countries.csv` (`atlas_name` must match the world-atlas shape; `continent` decides which catalog groups it appears in) and rerun `npm run data:com`. Borders come from the [us-atlas](https://github.com/topojson/us-atlas) / [world-atlas](https://github.com/topojson/world-atlas) npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
 

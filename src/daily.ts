@@ -45,7 +45,9 @@ type SavedProgress = { date: string; played: PlayedRound[] }
 export function loadProgress(date: string): PlayedRound[] {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as SavedProgress | null
-    return saved?.date === date ? saved.played : []
+    if (saved?.date !== date) return []
+    // Saves from before heat maps had one grid per part can't be drawn.
+    return saved.played.every((r) => Array.isArray(r.result.density)) ? saved.played : []
   } catch {
     return []
   }

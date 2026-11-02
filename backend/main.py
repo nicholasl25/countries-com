@@ -85,12 +85,13 @@ class GuessResult(BaseModel):
     trueCom: LatLon
     distanceKm: float
     score: int
-    density: DensityGrid
+    density: list[DensityGrid]  # one per group of nearby parts of the territory
 
 
 @cache
-def load_density(territory_id: str) -> DensityGrid:
-    return DensityGrid.model_validate_json((DATA_DIR / "density" / f"{territory_id}.json").read_text())
+def load_density(territory_id: str) -> list[DensityGrid]:
+    grids = json.loads((DATA_DIR / "density" / f"{territory_id}.json").read_text())
+    return [DensityGrid.model_validate(g) for g in grids]
 
 
 def distance_km(a: LatLon, b: LatLon) -> float:
@@ -155,7 +156,7 @@ def get_catalog_entry(territory_id: str) -> dict:
         "trueCom": {"lat": answer["lat"], "lon": answer["lon"]},
         "population": answer["population"],
         "areaKm2": answer["area_km2"],
-        "density": load_density(territory_id).model_dump(),
+        "density": [g.model_dump() for g in load_density(territory_id)],
     }
 
 
