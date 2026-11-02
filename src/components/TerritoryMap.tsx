@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent } from 'react'
 import type { DensityGrid, LatLon, TerritoryShape } from '../api'
 import { createMapProjection, MAP_HEIGHT, MAP_WIDTH } from '../geo'
-import { HEAT_STOPS, renderHeatmap, type MapRect } from '../heatmap'
+import { HEAT_STOPS, renderHeatmap } from '../heatmap'
 
 type Props = {
   shape: TerritoryShape
@@ -19,12 +19,15 @@ type Props = {
 
 /** Top-left corner of the visible area in map units, and the zoom factor. */
 type View = { x: number; y: number; k: number }
+type MapRect = { x: number; y: number; width: number; height: number }
 
 const FULL_VIEW: View = { x: 0, y: 0, k: 1 }
 const MAX_ZOOM = 256
 /** A press that moves less than this is a click (a guess), not a drag. */
 const DRAG_THRESHOLD_PX = 5
-const HEATMAP_DPI = 2
+/** Heat map pixels per map unit. It's drawn once and scaled with the zoom;
+ * each doubling quadruples the render time (~180 ms at 2). */
+const HEATMAP_SCALE = 2
 const X_PATH = 'M -6 -6 L 6 6 M 6 -6 L -6 6'
 
 function viewRect({ x, y, k }: View): MapRect {
@@ -78,20 +81,7 @@ export function TerritoryMap({ shape, label, guess, trueCom, density, onPick }: 
   const press = useRef({ moved: false, startX: 0, startY: 0 })
   const [panning, setPanning] = useState(false)
 
-  // Re-render the heat map at full detail for the visible area once zooming stops.
-  const [heatView, setHeatView] = useState(view)
-  useEffect(() => {
-    const timer = window.setTimeout(() => setHeatView(view), 150)
-    return () => window.clearTimeout(timer)
-  }, [view])
-  const heatRect = viewRect(heatView)
-  const heatmap = useMemo(
-    () =>
-      density
-        ? renderHeatmap(map, density, viewRect(heatView), MAP_WIDTH * HEATMAP_DPI, MAP_HEIGHT * HEATMAP_DPI)
-        : null,
-    [map, density, heatView],
-  )
+  const heatmap = useMemo(() => (density ? renderHeatmap(map, density, HEATMAP_SCALE) : null), [map, density])
 
   useEffect(() => {
     const svg = svgRef.current
@@ -205,10 +195,10 @@ export function TerritoryMap({ shape, label, guess, trueCom, density, onPick }: 
             <image
               className="heatmap"
               href={heatmap}
-              x={heatRect.x}
-              y={heatRect.y}
-              width={heatRect.width}
-              height={heatRect.height}
+              x="0"
+              y="0"
+              width={MAP_WIDTH}
+              height={MAP_HEIGHT}
               clipPath={`url(#${clipId})`}
             />
             <path className="territory-edge" d={map.path} />
