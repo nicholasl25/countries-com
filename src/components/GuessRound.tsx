@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { api, type GuessResult, type LatLon, type Territory } from '../api'
+import { formatLatLon } from '../geo'
 import { HeatLegend, TerritoryMap } from './TerritoryMap'
 
 export type PlayedRound = { guess: LatLon; result: GuessResult }
@@ -107,6 +108,33 @@ export function GuessRound({
             density={result?.density ?? null}
             onPick={ready ? onPick : undefined}
           />
+        )}
+
+        {played && (
+          <dl className="board-summary">
+            <div>
+              <dt>
+                <svg className="summary-icon" viewBox="-8 -8 16 16" aria-hidden="true">
+                  <path className="guess-x" d="M -5 -5 L 5 5 M 5 -5 L -5 5" />
+                </svg>
+                Your guess:
+              </dt>
+              <dd>{formatLatLon(played.guess)}</dd>
+            </div>
+            <div>
+              <dt>
+                <svg className="summary-icon" viewBox="-8 -8 16 16" aria-hidden="true">
+                  <circle r="4.5" className="pin-core com" />
+                </svg>
+                True CoM:
+              </dt>
+              <dd>{formatLatLon(played.result.trueCom)}</dd>
+            </div>
+            <div>
+              <dt>Score:</dt>
+              <dd>{played.result.score}</dd>
+            </div>
+          </dl>
         )}
 
         {result && action && <div className="board-action">{action}</div>}

@@ -6,6 +6,13 @@ import {
 } from 'd3-geo'
 import type { LatLon, TerritoryShape } from './api'
 
+/** e.g. "46.31° N, 2.69° E" */
+export function formatLatLon({ lat, lon }: LatLon): string {
+  const part = (value: number, positive: string, negative: string) =>
+    `${Math.abs(value).toFixed(2)}° ${value >= 0 ? positive : negative}`
+  return `${part(lat, 'N', 'S')}, ${part(lon, 'E', 'W')}`
+}
+
 export const MAP_WIDTH = 480
 export const MAP_HEIGHT = 360
 const PADDING = 16

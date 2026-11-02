@@ -356,6 +356,62 @@ button {
   color: var(--ink-soft);
 }
 
+.board-summary {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  margin: 0;
+  padding: 0.45rem 0.65rem;
+  display: grid;
+  gap: 0.2rem;
+  border: 2px solid #000;
+  background: rgb(255 255 255 / 0.92);
+  font-size: 0.8rem;
+  pointer-events: none;
+  animation: rise 480ms 150ms ease both;
+}
+
+.board-summary div {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.board-summary dt {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--ink-soft);
+}
+
+.board-summary dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.board-summary div:last-child dd {
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .board-summary {
+    top: 0.3rem;
+    left: 0.3rem;
+    padding: 0.3rem 0.45rem;
+    font-size: 0.68rem;
+  }
+}
+
+.summary-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  overflow: visible;
+}
+
+.summary-icon .guess-x {
+  stroke-width: 2.25;
+}
+
 .board-action {
   position: absolute;
   right: 0.6rem;

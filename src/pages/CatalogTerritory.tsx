@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type CatalogDetail } from '../api'
 import { HeatLegend, TerritoryMap } from '../components/TerritoryMap'
+import { formatLatLon } from '../geo'
 import { regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
@@ -8,10 +9,6 @@ type Props = {
   id: string
   /** Category the user came from, for the back link */
   category: string | null
-}
-
-function formatCoord(value: number, positive: string, negative: string): string {
-  return `${Math.abs(value).toFixed(2)}° ${value >= 0 ? positive : negative}`
 }
 
 export function CatalogTerritory({ id, category }: Props) {
@@ -73,9 +70,7 @@ export function CatalogTerritory({ id, category }: Props) {
           <dl className="facts">
             <div>
               <dt>Center of mass</dt>
-              <dd>
-                {formatCoord(detail.trueCom.lat, 'N', 'S')}, {formatCoord(detail.trueCom.lon, 'E', 'W')}
-              </dd>
+              <dd>{formatLatLon(detail.trueCom)}</dd>
             </div>
             <div>
               <dt>Population</dt>
