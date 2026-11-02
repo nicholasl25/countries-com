@@ -1,0 +1,131 @@
+import { useState, type ReactNode } from 'react'
+import { api, type GuessResult, type LatLon, type Territory } from '../api'
+import { HeatLegend, TerritoryMap } from './TerritoryMap'
+
+export type PlayedRound = { guess: LatLon; result: GuessResult }
+
+type Props = {
+  /** null while the territory is loading */
+  territory: Territory | null
+  /** Shown instead of the map if the territory failed to load */
+  loadError?: string | null
+  onRetry?: () => void
+  /** Shown under the instruction, e.g. the game mode or round */
+  header?: ReactNode
+  /** The finished guess, if this round has been played */
+  played: PlayedRound | null
+  onPlayed: (round: PlayedRound) => void
+  /** Shown under the score once the round is played, e.g. a next button */
+  children?: ReactNode
+}
+
+/** One territory: click a guess, submit it, then show the score and heat map. */
+export function GuessRound({
+  territory,
+  loadError,
+  onRetry,
+  header,
+  played,
+  onPlayed,
+  children,
+}: Props) {
+  const [pending, setPending] = useState<LatLon | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const loading = !territory && !loadError
+  const ready = territory && !played && !pending
+
+  function onPick(point: LatLon) {
+    if (!ready) return
+    setSubmitError(null)
+    setPending(point)
+    api
+      .submitGuess(territory.id, point)
+      .then((result) => onPlayed({ guess: point, result }))
+      .catch((err: unknown) => {
+        setSubmitError(err instanceof Error ? err.message : 'Could not submit your guess.')
+      })
+      .finally(() => setPending(null))
+  }
+
+  const result = played?.result
+
+  return (
+    <>
+      <p className="instruction rise delay">
+        {result ? (
+          'Your guess versus the true population center'
+        ) : (
+          <>
+            Click the map where you think the population{' '}
+            <span className="nowrap">center of mass</span> sits.
+          </>
+        )}
+      </p>
+
+      {header}
+
+      <div className={`board rise delay-2${loading ? ' is-loading' : ''}`}>
+        {loading && (
+          <div className="state" role="status">
+            <div className="skeleton-map" />
+            <p>Loading territory…</p>
+          </div>
+        )}
+
+        {loadError && (
+          <div className="state" role="alert">
+            <p className="state-title">Couldn’t load the map</p>
+            <p className="state-body">{loadError}</p>
+            {onRetry && (
+              <button type="button" className="btn" onClick={onRetry}>
+                Try again
+              </button>
+            )}
+          </div>
+        )}
+
+        {territory && (
+          <TerritoryMap
+            shape={territory.shape}
+            label={`Map of ${territory.name}. Click to place your guess.`}
+            guess={played?.guess ?? pending}
+            trueCom={result?.trueCom ?? null}
+            density={result?.density ?? null}
+            onPick={ready ? onPick : undefined}
+          />
+        )}
+      </div>
+
+      <div className="meta rise delay-2" aria-live="polite">
+        {territory && (
+          <p className="place">
+            <span className="place-name">{territory.name}</span>
+            <span className="place-region">{territory.region}</span>
+          </p>
+        )}
+
+        {submitError && ready && (
+          <p className="hint" role="alert">
+            {submitError}
+          </p>
+        )}
+
+        {result && (
+          <div className="result">
+            <p className="score">
+              <span className="score-value">{result.score}</span>
+              <span className="score-label">points</span>
+            </p>
+            <p className="distance">
+              {result.distanceKm < 1 ? 'Less than 1 km' : `${result.distanceKm.toFixed(0)} km`} from
+              the true <span className="nowrap">center of mass (CoM)</span>
+            </p>
+            <HeatLegend />
+            {children}
+          </div>
+        )}
+      </div>
+    </>
+  )
+}

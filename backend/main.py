@@ -5,6 +5,7 @@
     GET  /api/catalog           -> Catalog       list of territories by category
     GET  /api/catalog/{id}      -> CatalogDetail territory + answer + heat map
     GET  /api/world             -> low-detail world map (GeoJSON) for catalog previews
+    GET  /api/daily?date=YYYY-MM-DD -> DailyGame the day's rounds (from data/daily.csv)
 
 Answers and density grids come from `data/` (see `compute_com.py`). In the game
 they only leave the server as part of a guess result; the catalog shows them
@@ -13,6 +14,8 @@ on purpose.
     uvicorn main:app --reload --port 8787
 """
 
+import csv
+import datetime as dt
 import json
 import math
 import random
@@ -31,6 +34,26 @@ EARTH_RADIUS_KM = 6371.0
 DATA_DIR = Path(__file__).parent / "data"
 ANSWERS: dict[str, dict] = json.loads((DATA_DIR / "answers.json").read_text())["answers"]
 PLAYABLE = [t for t in TERRITORIES if t.id in ANSWERS]
+
+
+def load_daily() -> dict[dt.date, list[str]]:
+    """Hand-picked rounds per day: `date,round1,round2,...` (territory ids)."""
+    schedule = {}
+    with open(DATA_DIR / "daily.csv", newline="") as f:
+        for row in csv.DictReader(f):
+            day = dt.date.fromisoformat(row["date"])
+            ids = [v.strip() for k, v in row.items() if k.startswith("round") and v and v.strip()]
+            unknown = [i for i in ids if i not in ANSWERS]
+            if unknown:
+                raise ValueError(f"daily.csv {day}: unknown territory ids {unknown}")
+            if day in schedule:
+                raise ValueError(f"daily.csv: {day} is listed twice")
+            schedule[day] = ids
+    return schedule
+
+
+DAILY = load_daily()
+DAILY_START = min(DAILY, default=dt.date.today())
 
 app = FastAPI(title="Countries.CoM API")
 app.add_middleware(GZipMiddleware)
@@ -133,6 +156,26 @@ def get_catalog_entry(territory_id: str) -> dict:
         "population": answer["population"],
         "areaKm2": answer["area_km2"],
         "density": load_density(territory_id).model_dump(),
+    }
+
+
+@app.get("/api/daily")
+def get_daily(date: str = "") -> dict:
+    """`date` is the player's local date, so the game flips at their midnight."""
+    try:
+        day = dt.date.fromisoformat(date)
+    except ValueError:
+        raise HTTPException(400, "Expected ?date=YYYY-MM-DD.")
+    # The furthest-ahead time zone (UTC+14) is at most a day past UTC.
+    if day > dt.datetime.now(dt.timezone.utc).date() + dt.timedelta(days=1):
+        raise HTTPException(403, "That daily game isn't out yet.")
+    ids = DAILY.get(day)
+    if not ids:
+        raise HTTPException(404, f"No daily game for {day.isoformat()}.")
+    return {
+        "date": day.isoformat(),
+        "number": (day - DAILY_START).days + 1,
+        "rounds": [territory_json(i) for i in ids],
     }
 
 

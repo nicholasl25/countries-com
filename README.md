@@ -32,8 +32,9 @@ The precomputed answers are committed in `backend/data/answers.json`, so you don
 ```
 src/            frontend (never sees population data or answers up front)
   App.tsx       header menu + page switch (hash routes, see router.ts)
-  pages/        RandomGame, Catalog, CatalogTerritory
-  components/   TerritoryMap (outline, heat map, guess X, CoM dot), RegionCard
+  pages/        DailyGame, RandomGame, Catalog, CatalogTerritory
+  components/   GuessRound (one guess + score), TerritoryMap (outline, heat map, guess X, CoM dot), RegionCard
+  daily.ts      daily game: local date, saved progress, share text
   regions.ts    catalog region cards (title, category, preview bounds)
   api/types.ts  the API contract shared with the server
   api/http.ts   fetch client
@@ -42,6 +43,7 @@ src/            frontend (never sees population data or answers up front)
 backend/        Python
   territories.py  playable territories + their borders (TopoJSON in data/borders/)
   data/countries.csv  which world-atlas shapes are countries: display name + continent
+  data/daily.csv      hand-picked daily rounds (see below)
   compute_com.py  offline: population raster -> data/answers.json + data/density/*.json
   main.py         FastAPI app
 ```
@@ -54,6 +56,18 @@ API (all lat/lon; errors return `{ "error": "message" }`):
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories, mapName }] }` (`mapName` is the containing feature in `/api/world`)
 - `GET  /api/catalog/{id}` → `{ territory, trueCom, population, areaKm2, density }` — the catalog intentionally shows the answer
 - `GET  /api/world` → low-detail world map (GeoJSON, ~50 KB gzipped) for the catalog's region previews
+- `GET  /api/daily?date=YYYY-MM-DD` → `{ date, number, rounds: [Territory, …] }` for the player's local date (404 if none is scheduled, 403 for dates that haven't started anywhere yet)
+
+### Daily game
+
+Each day's rounds are listed in `backend/data/daily.csv`, one row per day:
+
+```csv
+date,round1,round2,round3,round4
+2026-11-02,italy,us-california,egypt,australia
+```
+
+Ids are the ones used in the catalog URLs (`#/catalog/<id>`): country slugs like `south-korea`, and `us-<state>` for states. The API checks every id on startup and refuses to start if one is unknown, so a typo shows up immediately. It only reloads on Python changes, so touch `main.py` after editing the CSV. The day's number (`Daily #N`) counts from the first date in the file. Days with no row show "No daily game today". Progress is saved in the browser, so a reload keeps the day's scores and can't replay a round.
 
 Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other than `/api`.
 

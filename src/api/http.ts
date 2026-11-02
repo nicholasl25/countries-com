@@ -2,6 +2,7 @@ import {
   ApiError,
   type Catalog,
   type CatalogDetail,
+  type DailyGame,
   type GameApi,
   type GuessResult,
   type LatLon,
@@ -20,6 +21,7 @@ import {
  *   GET  /catalog          -> Catalog
  *   GET  /catalog/{id}     -> CatalogDetail
  *   GET  /world            -> WorldMap
+ *   GET  /daily?date=YYYY-MM-DD -> DailyGame
  *
  * Non-2xx responses may include `{ "error": "message" }`.
  */
@@ -61,5 +63,6 @@ export function createHttpApi(baseUrl: string): GameApi {
     getCatalogDetail: (id: string) =>
       request<CatalogDetail>(`/catalog/${encodeURIComponent(id)}`),
     getWorld: () => request<WorldMap>('/world'),
+    getDaily: (date: string) => request<DailyGame>(`/daily?date=${encodeURIComponent(date)}`),
   }
 }

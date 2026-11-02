@@ -1,11 +1,12 @@
 import { Catalog } from './pages/Catalog'
 import { CatalogTerritory } from './pages/CatalogTerritory'
+import { DailyGame } from './pages/DailyGame'
 import { RandomGame } from './pages/RandomGame'
 import { routeHref, useRoute, type Route } from './router'
 import './styles.css'
 
-const MENU: { label: string; route: Route; matches: Route['page'][]; soon?: boolean }[] = [
-  { label: 'Daily Game', route: { page: 'daily' }, matches: ['daily'], soon: true },
+const MENU: { label: string; route: Route; matches: Route['page'][] }[] = [
+  { label: 'Daily Game', route: { page: 'daily' }, matches: ['daily'] },
   { label: 'Random', route: { page: 'random', category: null }, matches: ['random', 'play'] },
   { label: 'Catalog', route: { page: 'catalog', category: null }, matches: ['catalog', 'territory'] },
 ]
@@ -33,7 +34,6 @@ export default function App() {
                 aria-current={active ? 'page' : undefined}
               >
                 {item.label}
-                {item.soon && <span className="menu-soon">Soon</span>}
               </a>
             )
           })}
@@ -50,15 +50,7 @@ export default function App() {
         {route.page === 'territory' && (
           <CatalogTerritory id={route.id} category={route.category} />
         )}
-        {route.page === 'daily' && (
-          <div className="state rise">
-            <p className="state-title">Daily Game</p>
-            <p className="state-body">Coming soon — one territory a day, same for everyone.</p>
-            <a className="btn" href={routeHref({ page: 'random', category: null })}>
-              Play Random instead
-            </a>
-          </div>
-        )}
+        {route.page === 'daily' && <DailyGame />}
       </main>
 
       <footer className="foot">

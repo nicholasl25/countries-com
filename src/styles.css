@@ -126,15 +126,6 @@ button {
   background: var(--land);
 }
 
-.menu-soon {
-  padding: 0.05rem 0.35rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .stage {
   width: min(920px, 100%);
   margin: 0 auto;
@@ -743,4 +734,100 @@ a.region-row:hover .region-stat {
 .facts dd {
   margin: 0.1rem 0 0;
   font-variant-numeric: tabular-nums;
+}
+
+.daily-bar {
+  margin: -0.35rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+}
+
+.daily-title {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: 1.05rem;
+}
+
+.daily-rounds {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.daily-round {
+  appearance: none;
+  min-width: 2.6rem;
+  padding: 0.2rem 0.5rem;
+  border: 2px solid #000;
+  background: #fff;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.daily-round.is-done {
+  background: #000;
+  color: #fff;
+}
+
+.daily-round.is-current {
+  border-color: var(--land);
+  box-shadow: 0 0 0 2px var(--land);
+}
+
+.daily-round.is-done.is-current {
+  background: var(--land);
+}
+
+.daily-round:not(:disabled) {
+  cursor: pointer;
+}
+
+.daily-summary {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 2px solid #000;
+}
+
+.daily-breakdown {
+  margin: 0.8rem auto 1rem;
+  padding: 0;
+  max-width: 18rem;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.daily-breakdown li {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto;
+  align-items: center;
+  text-align: left;
+}
+
+.daily-breakdown-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.daily-share {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid #000;
+  font: inherit;
+  font-size: 0.9rem;
+  resize: none;
+}
+
+.daily-next {
+  margin: 0.8rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
 }

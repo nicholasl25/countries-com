@@ -9,7 +9,7 @@ import { useSyncExternalStore } from 'react'
  *   #/catalog                  region cards
  *   #/catalog?c=<group>        territories in one group
  *   #/catalog/<id>[?c=<group>] one territory's heat map and answer
- *   #/daily                    daily game (not built yet)
+ *   #/daily                    today's daily game
  */
 export type Route =
   | { page: 'random'; category: string | null }

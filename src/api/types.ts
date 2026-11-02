@@ -75,6 +75,15 @@ export type CatalogDetail = {
   density: DensityGrid
 }
 
+/** One day's hand-picked rounds, the same for everyone. */
+export type DailyGame = {
+  /** YYYY-MM-DD */
+  date: string
+  /** 1 for the first scheduled day, counting up by one per calendar day */
+  number: number
+  rounds: Territory[]
+}
+
 /** Low-detail outlines of every country, for catalog previews. */
 export type WorldMap = FeatureCollection<Polygon | MultiPolygon, { name: string | null }>
 
@@ -96,6 +105,8 @@ export interface GameApi {
   getCatalogDetail(id: string): Promise<CatalogDetail>
   /** Low-detail world map for catalog previews. */
   getWorld(): Promise<WorldMap>
+  /** The daily game for a local calendar date (YYYY-MM-DD). */
+  getDaily(date: string): Promise<DailyGame>
 }
 
 export class ApiError extends Error {
