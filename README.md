@@ -51,10 +51,10 @@ backend/        Python
 API (all lat/lon; errors return `{ "error": "message" }`):
 
 - `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick to a catalog category or `100 Largest Countries` by area, the Random page's default), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
-- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, ringsKm, distanceKm, score, density }` (`ringsKm` are the 1σ/2σ/3σ ring radii, see Scoring), where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
+- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, sigmaKm, distanceKm, score, density }` (`sigmaKm` is the population spread, see Scoring), where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
 
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories, mapName }] }` (`mapName` is the containing feature in `/api/world`)
-- `GET  /api/catalog/{id}` → `{ territory, trueCom, ringsKm, population, areaKm2, density }` — the catalog intentionally shows the answer
+- `GET  /api/catalog/{id}` → `{ territory, trueCom, sigmaKm, population, areaKm2, density }` — the catalog intentionally shows the answer
 - `GET  /api/world` → low-detail world map (GeoJSON, ~50 KB gzipped) for the catalog's region previews
 - `GET  /api/daily?date=YYYY-MM-DD` → `{ date, number, rounds: [Territory, …] }` for the player's local date (404 if none is scheduled, 403 for dates that haven't started anywhere yet)
 
@@ -81,9 +81,9 @@ To add or rename a country, edit `backend/data/countries.csv` (`atlas_name` must
 
 ### Scoring
 
-The offline step also finds each territory's **σ rings**: the distances from the CoM within which 39.3%, 86.5% and 98.9% of its people live. Those are the shares inside the 1σ, 2σ and 3σ circles of a 2D normal distribution, so for a bell-shaped population they're the usual standard deviations, but a few far-off islands (France's overseas departments) can't inflate them the way a root-mean-square distance would. The rings are drawn around the red dot after a guess.
+The offline step also finds each territory's **spread σ**, treating its population as a 2D normal distribution around the CoM: a 2D normal has 39.3% of its mass within 1σ, so σ is the distance from the CoM within which 39.3% of people live. Unlike a root-mean-square distance, a few far-off islands (France's overseas departments) can't inflate it. Rings at 1σ, 2σ and 3σ are drawn around the red dot after a guess.
 
-A guess `d` km from the CoM scores `1000 · e^(−ln4 · d / σ₁)`: 1000 on the dot and 4× fewer points per σ (250 at the 1σ ring, 63 at 2σ, 16 at 3σ). Judging distance by how spread out the people are, rather than by land area, keeps spread-out archipelagos (Kiribati, Hawaii) fair while still asking for precision where people are concentrated (the Bahamas around Nassau).
+A guess `d` km from the CoM scores `1000 · e^(−ln4 · d / σ)`: 1000 on the dot and 4× fewer points per σ (250 at the 1σ ring, 63 at 2σ, 16 at 3σ). Judging distance by how spread out the people are, rather than by land area, keeps spread-out archipelagos (Kiribati, Hawaii) fair while still asking for precision where people are concentrated (the Bahamas around Nassau).
 
 ## Stack
 

@@ -10,8 +10,8 @@ type Props = {
   guess?: LatLon | null
   /** The true center of mass (red dot) */
   trueCom?: LatLon | null
-  /** 1σ, 2σ, 3σ ring radii around the CoM */
-  ringsKm?: number[] | null
+  /** Population spread; drawn as rings at 1σ, 2σ and 3σ around the CoM */
+  sigmaKm?: number | null
   /** Population heat map drawn inside the border */
   density?: DensityGrid[] | null
   /** Called on click with the clicked location. It can be outside the border,
@@ -67,7 +67,7 @@ function toMap(svg: SVGSVGElement, view: View, clientX: number, clientY: number)
 }
 
 /** Remount (with a `key`) to reset the zoom when showing a different territory. */
-export function TerritoryMap({ shape, label, guess, trueCom, ringsKm, density, onPick }: Props) {
+export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, onPick }: Props) {
   const clipId = `land-${useId().replace(/:/g, '')}`
   const map = useMemo(() => createMapProjection(shape), [shape])
   const svgRef = useRef<SVGSVGElement>(null)
@@ -85,8 +85,8 @@ export function TerritoryMap({ shape, label, guess, trueCom, ringsKm, density, o
 
   const heatmap = useMemo(() => (density ? renderHeatmap(map, density, HEATMAP_SCALE) : null), [map, density])
   const rings = useMemo(
-    () => (trueCom && ringsKm ? ringsKm.map((r) => map.circle(trueCom, r)) : []),
-    [map, trueCom, ringsKm],
+    () => (trueCom && sigmaKm ? [1, 2, 3].map((n) => map.circle(trueCom, n * sigmaKm)) : []),
+    [map, trueCom, sigmaKm],
   )
 
   useEffect(() => {

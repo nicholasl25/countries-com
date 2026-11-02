@@ -105,7 +105,7 @@ export function GuessRound({
             label={`Map of ${territory.name}. Click to place your guess.`}
             guess={played?.guess ?? pending}
             trueCom={result?.trueCom ?? null}
-            ringsKm={result?.ringsKm ?? null}
+            sigmaKm={result?.sigmaKm ?? null}
             density={result?.density ?? null}
             onPick={ready ? onPick : undefined}
           />
@@ -131,15 +131,15 @@ export function GuessRound({
               </dt>
               <dd>{formatLatLon(played.result.trueCom)}</dd>
             </div>
-            {played.result.ringsKm && (
+            {played.result.sigmaKm && (
               <div>
                 <dt>
                   <svg className="summary-icon" viewBox="-8 -8 16 16" aria-hidden="true">
                     <circle r="6" className="summary-ring" />
                   </svg>
-                  1σ ring:
+                  σ:
                 </dt>
-                <dd>{formatKm(played.result.ringsKm[0])}</dd>
+                <dd>{formatKm(played.result.sigmaKm)}</dd>
               </div>
             )}
             <div>

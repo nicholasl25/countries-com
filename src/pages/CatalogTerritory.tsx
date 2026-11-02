@@ -59,7 +59,7 @@ export function CatalogTerritory({ id, category }: Props) {
             shape={territory.shape}
             label={`Population heat map of ${territory.name}`}
             trueCom={detail.trueCom}
-            ringsKm={detail.ringsKm}
+            sigmaKm={detail.sigmaKm}
             density={detail.density}
           />
         )}
@@ -87,16 +87,10 @@ export function CatalogTerritory({ id, category }: Props) {
             </div>
             <div className="facts-wide">
               <dt>
-                Rings: {['1', '2', '3'].map((n, i) => (
-                  <span key={n}>
-                    {i > 0 && ' / '}
-                    {n}
-                    <span className="no-caps">σ</span>
-                  </span>
-                ))}{' '}
-                (39% / 86% / 99% of people)
+                Spread <span className="no-caps">σ</span> (rings at 1, 2, 3
+                <span className="no-caps">σ</span>)
               </dt>
-              <dd>{detail.ringsKm.map(formatKm).join(' / ')}</dd>
+              <dd>{formatKm(detail.sigmaKm)}</dd>
             </div>
           </dl>
           <a className="btn btn-primary" href={routeHref({ page: 'play', id: territory.id })}>
