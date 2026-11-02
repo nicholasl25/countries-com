@@ -251,7 +251,6 @@ export function TerritoryMap({ shape, label, guess, trueCom, ringsKm, density, o
         {comXY && (
           <g transform={`translate(${comXY.x} ${comXY.y}) ${pinScale}`} aria-label="True center of mass">
             <g className="pin pin-com">
-              <circle r="12" className="pin-ring com" />
               <circle r="5" className="pin-core com" />
             </g>
           </g>

@@ -247,18 +247,6 @@ button {
   border: 1px solid #000;
 }
 
-.pin-ring {
-  fill: none;
-  stroke: #fff;
-  stroke-width: 2;
-  opacity: 0.9;
-}
-
-.pin-ring.com {
-  stroke: #000;
-  stroke-width: 2.5;
-}
-
 .pin-core {
   stroke: #0b1f4d;
   stroke-width: 1.5;
