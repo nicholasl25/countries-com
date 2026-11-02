@@ -15,7 +15,9 @@ type Props = {
   /** The finished guess, if this round has been played */
   played: PlayedRound | null
   onPlayed: (round: PlayedRound) => void
-  /** Shown under the score once the round is played, e.g. a next button */
+  /** Shown in the map's bottom-right corner once the round is played, e.g. a next button */
+  action?: ReactNode
+  /** Shown under the score once the round is played */
   children?: ReactNode
 }
 
@@ -27,6 +29,7 @@ export function GuessRound({
   header,
   played,
   onPlayed,
+  action,
   children,
 }: Props) {
   const [pending, setPending] = useState<LatLon | null>(null)
@@ -65,6 +68,15 @@ export function GuessRound({
 
       {header}
 
+      <p className="place rise delay">
+        {territory && (
+          <>
+            {territory.name}
+            <span className="place-region">, {territory.region}</span>
+          </>
+        )}
+      </p>
+
       <div className={`board rise delay-2${loading ? ' is-loading' : ''}`}>
         {loading && (
           <div className="state" role="status">
@@ -96,16 +108,11 @@ export function GuessRound({
             onPick={ready ? onPick : undefined}
           />
         )}
+
+        {result && action && <div className="board-action">{action}</div>}
       </div>
 
       <div className="meta rise delay-2" aria-live="polite">
-        {territory && (
-          <p className="place">
-            <span className="place-name">{territory.name}</span>
-            <span className="place-region">{territory.region}</span>
-          </p>
-        )}
-
         {submitError && ready && (
           <p className="hint" role="alert">
             {submitError}

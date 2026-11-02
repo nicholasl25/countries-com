@@ -18,6 +18,7 @@ import csv
 import datetime as dt
 import json
 import math
+import os
 import random
 from functools import cache
 from pathlib import Path
@@ -26,12 +27,15 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape, get_world_preview
 
 EARTH_RADIUS_KM = 6371.0
 DATA_DIR = Path(__file__).parent / "data"
+# Built frontend. Locally this is the repo's dist/; the image sets STATIC_DIR.
+DIST_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parent.parent / "dist"))
 ANSWERS: dict[str, dict] = json.loads((DATA_DIR / "answers.json").read_text())["answers"]
 PLAYABLE = [t for t in TERRITORIES if t.id in ANSWERS]
 
@@ -204,3 +208,8 @@ async def http_error(_: Request, exc: HTTPException) -> JSONResponse:
 @app.exception_handler(RequestValidationError)
 async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
     return JSONResponse({"error": "Expected { territoryId, guess: { lat, lon } }."}, status_code=400)
+
+
+# After the API routes, so /api is never served as a file. Hash routes need only index.html.
+if DIST_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=DIST_DIR, html=True), name="site")

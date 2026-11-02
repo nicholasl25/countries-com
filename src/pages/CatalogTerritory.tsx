@@ -35,6 +35,15 @@ export function CatalogTerritory({ id, category }: Props) {
         ← {category ? (regionForCategory(category)?.title ?? category) : 'Catalog'}
       </a>
 
+      <p className="place">
+        {territory && (
+          <>
+            {territory.name}
+            <span className="place-region">, {territory.region}</span>
+          </>
+        )}
+      </p>
+
       <div className={`board${detail ? '' : ' is-loading'}`}>
         {error && (
           <div className="state" role="alert">
@@ -60,10 +69,6 @@ export function CatalogTerritory({ id, category }: Props) {
 
       {detail && territory && (
         <div className="meta">
-          <p className="place">
-            <span className="place-name">{territory.name}</span>
-            <span className="place-region">{territory.region}</span>
-          </p>
           <HeatLegend />
           <dl className="facts">
             <div>

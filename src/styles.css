@@ -241,10 +241,6 @@ button {
   color: var(--ink-soft);
 }
 
-.place + .legend {
-  margin-top: 0.7rem;
-}
-
 .legend-bar {
   width: 9rem;
   height: 0.5rem;
@@ -349,19 +345,22 @@ button {
 
 .place {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.place-name {
+  min-height: 1.65rem;
+  text-align: center;
   font-family: var(--font-brand);
   font-size: 1.35rem;
+  line-height: 1.2;
 }
 
 .place-region {
   color: var(--ink-soft);
-  font-size: 0.92rem;
+}
+
+.board-action {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  animation: rise 480ms 200ms ease both;
 }
 
 .hint {

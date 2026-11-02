@@ -51,10 +51,11 @@ export function RandomGame({ territoryId, category }: Props) {
       }
       played={played}
       onPlayed={setPlayed}
-    >
-      <button type="button" className="btn btn-primary" onClick={playAgain}>
-        Play again
-      </button>
-    </GuessRound>
+      action={
+        <button type="button" className="btn btn-primary" onClick={playAgain}>
+          Play again
+        </button>
+      }
+    />
   )
 }

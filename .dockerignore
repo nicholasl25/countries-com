@@ -1,0 +1,9 @@
+.git
+node_modules
+dist
+backend/.venv
+backend/data/raw
+**/__pycache__
+*.pyc
+.DS_Store
+agent-tools

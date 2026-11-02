@@ -20,6 +20,7 @@ export function DailyGame() {
   const [missing, setMissing] = useState(false)
   const [played, setPlayed] = useState<PlayedRound[]>(() => loadProgress(date))
   const [index, setIndex] = useState(played.length)
+  const [copied, setCopied] = useState<boolean | null>(null)
 
   function load() {
     setError(null)
@@ -53,6 +54,15 @@ export function DailyGame() {
     const next = [...played, round]
     setPlayed(next)
     saveProgress(date, next)
+  }
+
+  const url = `${window.location.origin}${window.location.pathname}${routeHref({ page: 'daily' })}`
+  const text = game && finished ? shareText(game, played, url) : ''
+
+  async function copy() {
+    const ok = await copyText(text)
+    setCopied(ok)
+    if (ok) window.setTimeout(() => setCopied(null), 2000)
   }
 
   return (
@@ -92,29 +102,33 @@ export function DailyGame() {
       }
       played={played[current] ?? null}
       onPlayed={onPlayed}
+      action={
+        finished ? (
+          <button type="button" className="btn btn-primary" onClick={copy}>
+            {copied ? 'Copied!' : 'Copy score'}
+          </button>
+        ) : (
+          <button type="button" className="btn btn-primary" onClick={() => setIndex(current + 1)}>
+            Next round
+          </button>
+        )
+      }
     >
-      {game && finished ? (
-        <DailySummary game={game} played={played} />
-      ) : (
-        <button type="button" className="btn btn-primary" onClick={() => setIndex(current + 1)}>
-          Next round
-        </button>
-      )}
+      {game && finished && <DailySummary game={game} played={played} text={text} copied={copied} />}
     </GuessRound>
   )
 }
 
-function DailySummary({ game, played }: { game: Daily; played: PlayedRound[] }) {
-  const [copied, setCopied] = useState<boolean | null>(null)
-  const total = played.reduce((sum, r) => sum + r.result.score, 0)
-  const url = `${window.location.origin}${window.location.pathname}${routeHref({ page: 'daily' })}`
-  const text = shareText(game, played, url)
+type SummaryProps = {
+  game: Daily
+  played: PlayedRound[]
+  /** The share text, shown for manual copying if copying failed */
+  text: string
+  copied: boolean | null
+}
 
-  async function copy() {
-    const ok = await copyText(text)
-    setCopied(ok)
-    if (ok) window.setTimeout(() => setCopied(null), 2000)
-  }
+function DailySummary({ game, played, text, copied }: SummaryProps) {
+  const total = played.reduce((sum, r) => sum + r.result.score, 0)
 
   return (
     <div className="daily-summary">
@@ -133,9 +147,6 @@ function DailySummary({ game, played }: { game: Daily; played: PlayedRound[] }) 
           </li>
         ))}
       </ol>
-      <button type="button" className="btn btn-primary" onClick={copy}>
-        {copied ? 'Copied!' : 'Copy score'}
-      </button>
       {copied === false && (
         <>
           <p className="hint" role="alert">
