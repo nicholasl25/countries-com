@@ -216,7 +216,18 @@ export function TerritoryMap({ shape, label, guess, trueCom, density, onPick }: 
         )}
 
         {guessXY && comXY && (
-          <line className="com-link" x1={guessXY.x} y1={guessXY.y} x2={comXY.x} y2={comXY.y} />
+          <>
+            {/* Black over the white background, white over the territory. */}
+            <line className="com-link" x1={guessXY.x} y1={guessXY.y} x2={comXY.x} y2={comXY.y} />
+            <line
+              className="com-link on-land"
+              x1={guessXY.x}
+              y1={guessXY.y}
+              x2={comXY.x}
+              y2={comXY.y}
+              clipPath={`url(#${clipId})`}
+            />
+          </>
         )}
 
         {guessXY && (

@@ -297,12 +297,16 @@ button {
 }
 
 .com-link {
-  stroke: #fff;
+  stroke: #000;
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
   stroke-dasharray: 6 5;
   fill: none;
   animation: draw-link 560ms ease-out both;
+}
+
+.com-link.on-land {
+  stroke: #fff;
 }
 
 .state {
