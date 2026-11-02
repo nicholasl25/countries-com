@@ -137,7 +137,7 @@ export function GuessRound({
                   <svg className="summary-icon" viewBox="-8 -8 16 16" aria-hidden="true">
                     <circle r="6" className="summary-ring" />
                   </svg>
-                  σ:
+                  Ring spacing:
                 </dt>
                 <dd>{formatKm(played.result.sigmaKm)}</dd>
               </div>
