@@ -376,19 +376,20 @@ button {
   top: 0.5rem;
   left: 0.5rem;
   margin: 0;
-  padding: 0.45rem 0.65rem;
+  padding: 0.3rem 0.5rem;
   display: grid;
-  gap: 0.2rem;
+  gap: 0.1rem;
   border: 2px solid #000;
   background: rgb(255 255 255 / 0.92);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
   pointer-events: none;
   animation: rise 480ms 150ms ease both;
 }
 
 .board-summary div {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   justify-content: space-between;
 }
 
@@ -412,8 +413,8 @@ button {
   .board-summary {
     top: 0.3rem;
     left: 0.3rem;
-    padding: 0.3rem 0.45rem;
-    font-size: 0.68rem;
+    padding: 0.2rem 0.35rem;
+    font-size: 0.62rem;
   }
 }
 

@@ -118,9 +118,9 @@ export function GuessRound({
                 <svg className="summary-icon" viewBox="-8 -8 16 16" aria-hidden="true">
                   <path className="guess-x" d="M -5 -5 L 5 5 M 5 -5 L -5 5" />
                 </svg>
-                Your guess:
+                Guess:
               </dt>
-              <dd>{formatLatLon(played.guess)}</dd>
+              <dd>{formatLatLon(played.guess, true)}</dd>
             </div>
             <div>
               <dt>
@@ -129,7 +129,7 @@ export function GuessRound({
                 </svg>
                 True CoM:
               </dt>
-              <dd>{formatLatLon(played.result.trueCom)}</dd>
+              <dd>{formatLatLon(played.result.trueCom, true)}</dd>
             </div>
             {played.result.sigmaKm && (
               <div>
