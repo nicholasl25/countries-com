@@ -42,6 +42,11 @@ export type DensityGrid = {
 export type GuessResult = {
   /** The true population-weighted center of mass */
   trueCom: LatLon
+  /**
+   * 1σ, 2σ, 3σ: distances from the CoM containing 39%, 86% and 99% of the
+   * people (as for a 2D normal distribution). The score scales with 1σ.
+   */
+  ringsKm: number[]
   /** Great-circle distance between the guess and the true CoM */
   distanceKm: number
   /** 0–1000 */
@@ -71,6 +76,8 @@ export type Catalog = {
 export type CatalogDetail = {
   territory: Territory
   trueCom: LatLon
+  /** See `GuessResult.ringsKm` */
+  ringsKm: number[]
   population: number
   areaKm2: number
   density: DensityGrid[]

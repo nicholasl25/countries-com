@@ -51,10 +51,10 @@ backend/        Python
 API (all lat/lon; errors return `{ "error": "message" }`):
 
 - `GET  /api/territory[?id=|?category=]` → `{ id, name, region, shape }` (random unless `id` is given; `category` limits the pick), where `shape` is a GeoJSON Polygon/MultiPolygon feature (no answer included)
-- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, distanceKm, score, density }`, where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
+- `POST /api/guess` with `{ territoryId, guess: { lat, lon } }` → `{ trueCom: { lat, lon }, ringsKm, distanceKm, score, density }` (`ringsKm` are the 1σ/2σ/3σ ring radii, see Scoring), where `density` is a list of coarse population-density grids (≤256 cells on the long side, one per group of nearby parts, e.g. mainland France, Réunion, …) the frontend draws as a heat map
 
 - `GET  /api/catalog` → `{ categories, territories: [{ id, name, region, categories, mapName }] }` (`mapName` is the containing feature in `/api/world`)
-- `GET  /api/catalog/{id}` → `{ territory, trueCom, population, areaKm2, density }` — the catalog intentionally shows the answer
+- `GET  /api/catalog/{id}` → `{ territory, trueCom, ringsKm, population, areaKm2, density }` — the catalog intentionally shows the answer
 - `GET  /api/world` → low-detail world map (GeoJSON, ~50 KB gzipped) for the catalog's region previews
 - `GET  /api/daily?date=YYYY-MM-DD` → `{ date, number, rounds: [Territory, …] }` for the player's local date (404 if none is scheduled, 403 for dates that haven't started anywhere yet)
 
@@ -75,9 +75,15 @@ Set `VITE_API_URL` (see `.env.example`) to point the frontend at a server other 
 
 Every ~1 km grid cell inside the territory's outline contributes its population as a point mass at the cell center. The CoM is the population-weighted mean of those points as 3D unit vectors, projected back onto the Earth's surface. That point can fall outside the territory (in the sea for archipelagos like Indonesia, or in a neighbor for Palestine), so guesses are accepted anywhere on the map. Territories crossing the 180° meridian (Alaska, Russia, Fiji, …) are shifted east before reading the raster, and territories smaller than one cell use every cell they touch. Uninhabited territories (e.g. Heard Island) and Antarctica are skipped.
 
-The same pass writes downsampled, log-scaled density grids per territory to `data/density/` for the heat map: one grid per group of parts within 1° of each other, so far-flung pieces like France's overseas departments keep full detail when zoomed in (the map supports scroll/pinch zoom and drag; the heat map is drawn once and scales with it). A full run takes under a minute and peaks around 3 GB of memory (Russia). After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory.
+The same pass writes downsampled, log-scaled density grids per territory to `data/density/` for the heat map: one grid per group of parts within 1° of each other, so far-flung pieces like France's overseas departments keep full detail when zoomed in (the map supports scroll/pinch zoom and drag; the heat map is drawn once and scales with it). A full run takes under a minute and peaks around 4.5 GB of memory. After rerunning it, restart the API (or touch `main.py`) since density files are cached in memory.
 
 To add or rename a country, edit `backend/data/countries.csv` (`atlas_name` must match the world-atlas shape; `continent` decides which catalog groups it appears in) and rerun `npm run data:com`. Borders come from the [us-atlas](https://github.com/topojson/us-atlas) / [world-atlas](https://github.com/topojson/world-atlas) npm packages (Natural Earth and US Census data), copied into `backend/data/borders/`.
+
+### Scoring
+
+The offline step also finds each territory's **σ rings**: the distances from the CoM within which 39.3%, 86.5% and 98.9% of its people live. Those are the shares inside the 1σ, 2σ and 3σ circles of a 2D normal distribution, so for a bell-shaped population they're the usual standard deviations, but a few far-off islands (France's overseas departments) can't inflate them the way a root-mean-square distance would. The rings are drawn around the red dot after a guess.
+
+A guess `d` km from the CoM scores `1000 · e^(−ln4 · d / σ₁)`: 1000 on the dot and 4× fewer points per σ (250 at the 1σ ring, 63 at 2σ, 16 at 3σ). Judging distance by how spread out the people are, rather than by land area, keeps spread-out archipelagos (Kiribati, Hawaii) fair while still asking for precision where people are concentrated (the Bahamas around Nassau).
 
 ## Stack
 

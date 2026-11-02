@@ -33,6 +33,7 @@ from pydantic import BaseModel, Field
 from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape, get_world_preview
 
 EARTH_RADIUS_KM = 6371.0
+SCORE_K = math.log(4)
 DATA_DIR = Path(__file__).parent / "data"
 # Built frontend. Locally this is the repo's dist/; the image sets STATIC_DIR.
 DIST_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parent.parent / "dist"))
@@ -87,6 +88,7 @@ class DensityGrid(BaseModel):
 
 class GuessResult(BaseModel):
     trueCom: LatLon
+    ringsKm: list[float]  # 1σ, 2σ, 3σ: distances containing 39%, 86%, 99% of people
     distanceKm: float
     score: int
     density: list[DensityGrid]  # one per group of nearby parts of the territory
@@ -105,10 +107,11 @@ def distance_km(a: LatLon, b: LatLon) -> float:
     return 2 * EARTH_RADIUS_KM * math.asin(math.sqrt(h))
 
 
-def score(distance: float, area_km2: float) -> int:
-    """0–1000. Distance is judged relative to the territory's size."""
-    size_km = math.sqrt(area_km2)
-    return max(0, round(1000 * math.exp(-distance / (0.18 * size_km))))
+def score(distance: float, sigma_km: float) -> int:
+    """0–1000, judged relative to how spread out the territory's people are
+    (its 1σ ring): 1000 on the dot, and 4× fewer points per σ of distance —
+    250 at 1σ, 63 at 2σ, 16 at 3σ."""
+    return max(0, round(1000 * math.exp(-SCORE_K * distance / sigma_km)))
 
 
 def territory_json(territory_id: str) -> dict:
@@ -158,6 +161,7 @@ def get_catalog_entry(territory_id: str) -> dict:
     return {
         "territory": territory,
         "trueCom": {"lat": answer["lat"], "lon": answer["lon"]},
+        "ringsKm": answer["rings_km"],
         "population": answer["population"],
         "areaKm2": answer["area_km2"],
         "density": [g.model_dump() for g in load_density(territory_id)],
@@ -193,8 +197,9 @@ def post_guess(body: GuessRequest) -> GuessResult:
     d = distance_km(body.guess, true_com)
     return GuessResult(
         trueCom=true_com,
+        ringsKm=answer["rings_km"],
         distanceKm=d,
-        score=score(d, answer["area_km2"]),
+        score=score(d, answer["rings_km"][0]),
         density=load_density(body.territoryId),
     )
 

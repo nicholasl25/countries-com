@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type CatalogDetail } from '../api'
 import { HeatLegend, TerritoryMap } from '../components/TerritoryMap'
-import { formatLatLon } from '../geo'
+import { formatKm, formatLatLon } from '../geo'
 import { regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
@@ -59,6 +59,7 @@ export function CatalogTerritory({ id, category }: Props) {
             shape={territory.shape}
             label={`Population heat map of ${territory.name}`}
             trueCom={detail.trueCom}
+            ringsKm={detail.ringsKm}
             density={detail.density}
           />
         )}
@@ -83,6 +84,19 @@ export function CatalogTerritory({ id, category }: Props) {
             <div>
               <dt>Density</dt>
               <dd>{Math.round(detail.population / detail.areaKm2).toLocaleString()} / km²</dd>
+            </div>
+            <div className="facts-wide">
+              <dt>
+                Rings: {['1', '2', '3'].map((n, i) => (
+                  <span key={n}>
+                    {i > 0 && ' / '}
+                    {n}
+                    <span className="no-caps">σ</span>
+                  </span>
+                ))}{' '}
+                (39% / 86% / 99% of people)
+              </dt>
+              <dd>{detail.ringsKm.map(formatKm).join(' / ')}</dd>
             </div>
           </dl>
           <a className="btn btn-primary" href={routeHref({ page: 'play', id: territory.id })}>

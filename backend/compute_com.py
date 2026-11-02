@@ -7,8 +7,10 @@ Reads the GHS-POP 2025 30 arc-second (~1 km) global population grid
 
 Each grid cell's population is treated as a point mass on the sphere at the
 cell center. The CoM is the weighted mean of those 3D unit vectors, projected
-back onto the surface. The territory's area (used for scoring) is the summed
-area of the cells inside it.
+back onto the surface. The σ rings (the 1σ one scales scores) are the
+distances from the CoM that contain the same share of people as a 2D normal
+distribution's 1σ/2σ/3σ circles. The area is the summed area of the cells
+inside the territory.
 
 It also writes `data/density/<id>.json`: coarse population-density grids the
 frontend draws as a heat map after a guess. Territories with far-apart parts
@@ -42,6 +44,9 @@ RASTER_URL = (
 EARTH_RADIUS_KM = 6371.0
 DENSITY_MAX_CELLS = 256  # grid cells along the longer side of each heat map grid
 CLUSTER_GAP_DEG = 1.0  # parts closer than this share a heat map grid
+# Share of a 2D normal distribution within 1σ, 2σ, 3σ of its center: 1 - e^(-n²/2)
+SIGMA_SHARES = [1 - math.exp(-(n**2) / 2) for n in (1, 2, 3)]
+MIN_RING_KM = 0.5  # about half a raster cell
 
 
 def ensure_raster() -> None:
@@ -213,11 +218,26 @@ def center_of_mass(src: rasterio.DatasetReader, shape: dict) -> tuple[dict, list
     cell_area = EARTH_RADIUS_KM**2 * np.radians(res_lon) * (np.sin(lat_top) - np.sin(lat_top + np.radians(res_lat)))
     area_km2 = float(np.sum(cell_area * inside.sum(axis=1)))
 
+    com_lat, com_lon = np.arctan2(z, np.hypot(x, y)), np.arctan2(y, x)
+
+    # σ rings: the distances from the CoM within which 39.3%, 86.5% and 98.9%
+    # of people live — where the 1σ/2σ/3σ circles of a 2D normal distribution
+    # would be. Unlike an RMS distance, a few far-off islands can't inflate them.
+    rr, cc = np.nonzero(pop)
+    cos_angle = np.sin(lats[rr]) * np.sin(com_lat) + np.cos(lats[rr]) * np.cos(com_lat) * np.cos(lons[cc] - com_lon)
+    dist_km = EARTH_RADIUS_KM * np.arccos(np.clip(cos_angle, -1, 1))
+    order = np.argsort(dist_km)
+    share = np.cumsum(pop[rr, cc][order]) / pop.sum()
+    rings_km = [float(dist_km[order][np.searchsorted(share, q)]) for q in SIGMA_SHARES]
+    # Every cell's people sit at its center, so no ring can be finer than a cell.
+    rings_km = [max(r, MIN_RING_KM) for r in rings_km]
+
     answer = {
-        "lat": round(float(np.degrees(np.arctan2(z, np.hypot(x, y)))), 4),
-        "lon": round(float(np.degrees(np.arctan2(y, x))), 4),
+        "lat": round(float(np.degrees(com_lat)), 4),
+        "lon": round(float(np.degrees(com_lon)), 4),
         "population": int(round(pop.sum())),
         "area_km2": round(area_km2),
+        "rings_km": [round(r, 2) for r in rings_km],
     }
     return answer, density_grids(pop, inside * cell_area[:, None], transform, geometry)
 
@@ -239,7 +259,10 @@ def main() -> None:
             a, density = computed
             answers[t.id] = a
             (density_dir / f"{t.id}.json").write_text(json.dumps(density) + "\n")
-            print(f"{t.name:<12} {a['lat']:8.3f}, {a['lon']:9.3f}  pop {a['population']:>13,}  area {a['area_km2']:>9,} km²")
+            print(
+                f"{t.name:<12} {a['lat']:8.3f}, {a['lon']:9.3f}  pop {a['population']:>13,}"
+                f"  area {a['area_km2']:>9,} km²  σ {a['rings_km'][0]:>7,.1f} km"
+            )
 
     out = DATA_DIR / "answers.json"
     out.write_text(

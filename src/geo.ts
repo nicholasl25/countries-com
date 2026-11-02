@@ -1,16 +1,24 @@
 import {
   geoAzimuthalEqualArea,
   geoCentroid,
+  geoCircle,
   geoPath,
   type GeoProjection,
 } from 'd3-geo'
 import type { LatLon, TerritoryShape } from './api'
+
+const KM_PER_DEGREE = (Math.PI * 6371) / 180
 
 /** e.g. "46.31° N, 2.69° E" */
 export function formatLatLon({ lat, lon }: LatLon): string {
   const part = (value: number, positive: string, negative: string) =>
     `${Math.abs(value).toFixed(2)}° ${value >= 0 ? positive : negative}`
   return `${part(lat, 'N', 'S')}, ${part(lon, 'E', 'W')}`
+}
+
+/** e.g. "312 km", "4.2 km" */
+export function formatKm(km: number): string {
+  return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km).toLocaleString('en-US')} km`
 }
 
 export const MAP_WIDTH = 480
@@ -26,6 +34,8 @@ export type MapProjection = {
   toXY(p: LatLon): { x: number; y: number }
   /** Inverse of `toXY`, whether or not the point is inside the territory. */
   unproject(x: number, y: number): LatLon | null
+  /** SVG path of a circle on the Earth's surface (great-circle radius). */
+  circle(center: LatLon, radiusKm: number): string
 }
 
 export function createMapProjection(shape: TerritoryShape): MapProjection {
@@ -39,9 +49,10 @@ export function createMapProjection(shape: TerritoryShape): MapProjection {
       ],
       shape,
     )
+  const toPath = geoPath(projection)
 
   return {
-    path: geoPath(projection)(shape) ?? '',
+    path: toPath(shape) ?? '',
     toXY({ lat, lon }) {
       const [x, y] = projection([lon, lat]) ?? [NaN, NaN]
       return { x, y }
@@ -49,6 +60,13 @@ export function createMapProjection(shape: TerritoryShape): MapProjection {
     unproject(x, y) {
       const lonLat = projection.invert?.([x, y])
       return lonLat ? { lon: lonLat[0], lat: lonLat[1] } : null
+    },
+    circle(center, radiusKm) {
+      const circle = geoCircle()
+        .center([center.lon, center.lat])
+        .radius(Math.min(radiusKm / KM_PER_DEGREE, 179))
+        .precision(1)
+      return toPath(circle()) ?? ''
     },
   }
 }
