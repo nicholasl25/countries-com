@@ -1,18 +1,35 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { api, type Territory } from '../api'
 import { GuessRound, type PlayedRound } from '../components/GuessRound'
 import { regionForCategory } from '../regions'
-import { navigate, routeHref } from '../router'
+import { navigate } from '../router'
+
+type Mode = { label: string; route: string | null; category?: string }
 
 /**
  * The Random page's pools. `route` is the `?c=` value (null is the default
  * pool); `category` is what's sent to the API (undefined = every territory).
  */
-const MODES: { label: string; route: string | null; category?: string }[] = [
-  { label: '100 largest countries', route: null, category: '100 Largest Countries' },
-  { label: 'States', route: 'US States', category: 'US States' },
-  { label: 'All', route: 'all' },
+const MODE_GROUPS: { label?: string; modes: Mode[] }[] = [
+  {
+    modes: [
+      { label: 'Countries (Top 100)', route: null, category: '100 Largest Countries' },
+      { label: 'Countries (All)', route: 'Countries', category: 'Countries' },
+      { label: 'U.S. States', route: 'US States', category: 'US States' },
+      { label: 'Continents', route: 'Continents', category: 'Continents' },
+      { label: 'All', route: 'all' },
+    ],
+  },
+  {
+    label: 'Countries by continent',
+    modes: ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'].map((c) => ({
+      label: c,
+      route: c,
+      category: c,
+    })),
+  },
 ]
+const MODES = MODE_GROUPS.flatMap((g) => g.modes)
 
 type Props = {
   /** Play this territory first instead of a random one. */
@@ -56,25 +73,33 @@ export function RandomGame({ territoryId, category = null }: Props) {
       loadError={error}
       onRetry={() => loadTerritory(territoryId)}
       header={
-        <>
-          <nav className="mode-switch" aria-label="Random from">
-            {MODES.map((m) => (
-              <a
-                key={m.label}
-                className={`mode-option${m === mode ? ' is-active' : ''}`}
-                href={routeHref({ page: 'random', category: m.route })}
-                aria-current={m === mode ? 'page' : undefined}
-              >
-                {m.label}
-              </a>
-            ))}
-          </nav>
-          {catalogCategory && (
-            <p className="playing-in">
-              Random · {regionForCategory(catalogCategory)?.title ?? catalogCategory}
-            </p>
-          )}
-        </>
+        <label className="mode-picker">
+          <span className="mode-picker-label">Random from</span>
+          <select
+            value={mode ? MODES.indexOf(mode) : ''}
+            onChange={(e) => navigate({ page: 'random', category: MODES[Number(e.target.value)].route })}
+          >
+            {!mode && (
+              <option value="" disabled>
+                {catalogCategory ? (regionForCategory(catalogCategory)?.title ?? catalogCategory) : 'Choose…'}
+              </option>
+            )}
+            {MODE_GROUPS.map((g, gi) => {
+              const options = g.modes.map((m) => (
+                <option key={m.label} value={MODES.indexOf(m)}>
+                  {m.label}
+                </option>
+              ))
+              return g.label ? (
+                <optgroup key={g.label} label={g.label}>
+                  {options}
+                </optgroup>
+              ) : (
+                <Fragment key={gi}>{options}</Fragment>
+              )
+            })}
+          </select>
+        </label>
       }
       played={played}
       onPlayed={setPlayed}

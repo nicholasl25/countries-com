@@ -775,45 +775,34 @@ a.region-row:hover .region-stat {
   font-weight: 550;
 }
 
-.mode-switch {
+.mode-picker {
   margin: -0.35rem 0 0;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  border: 2px solid #000;
-}
-
-.mode-option {
-  padding: 0.35rem 0.85rem;
-  color: var(--ink);
-  text-decoration: none;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.9rem;
-  transition: background 140ms ease, color 140ms ease;
 }
 
-.mode-option + .mode-option {
-  border-left: 2px solid #000;
-}
-
-.mode-option:hover {
-  background: var(--mist);
-}
-
-.mode-option.is-active {
-  background: #000;
-  color: #fff;
-}
-
-.playing-in {
-  margin: -0.35rem 0 0;
-  display: flex;
-  gap: 0.6rem;
-  font-size: 0.85rem;
+.mode-picker-label {
   color: var(--ink-soft);
 }
 
-.playing-in a {
-  color: var(--land);
+.mode-picker select {
+  appearance: none;
+  padding: 0.35rem 2rem 0.35rem 0.7rem;
+  border: 2px solid #000;
+  border-radius: 0;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E")
+    no-repeat right 0.65rem center / 0.65rem;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mode-picker select:focus-visible {
+  outline: 2px solid var(--com);
+  outline-offset: 2px;
 }
 
 .catalog-grid {
