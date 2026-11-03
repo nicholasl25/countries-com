@@ -418,12 +418,13 @@ button {
 .com-popup {
   position: absolute;
   z-index: 2;
-  min-width: 11rem;
-  padding: 0.55rem 0.75rem 0.6rem;
+  min-width: 9rem;
+  padding: 0.4rem 0.6rem 0.45rem;
   border: 2px solid #000;
-  background: #fff;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
-  font-size: 0.85rem;
+  background: rgb(255 255 255 / 0.85);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+  font-size: 0.75rem;
   transform: translate(-50%, calc(-100% - 14px));
   animation: fade-in 160ms ease both;
 }
@@ -446,13 +447,13 @@ button {
 }
 
 .com-popup-title {
-  margin: 0 1.2rem 0.15rem 0;
+  margin: 0 1rem 0.1rem 0;
   font-family: var(--font-brand);
-  font-size: 1rem;
+  font-size: 0.88rem;
 }
 
 .com-popup-coords {
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.3rem;
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
