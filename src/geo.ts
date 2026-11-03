@@ -16,6 +16,11 @@ export function formatLatLon({ lat, lon }: LatLon, compact = false): string {
   return `${part(lat, 'N', 'S')}${compact ? ' ' : ', '}${part(lon, 'E', 'W')}`
 }
 
+/** Opens Google Maps with a pin at the point (it shows the nearest address or place). */
+export function googleMapsUrl({ lat, lon }: LatLon): string {
+  return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(5)},${lon.toFixed(5)}`
+}
+
 /** e.g. "312 km", "4.2 km" */
 export function formatKm(km: number): string {
   return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km).toLocaleString('en-US')} km`

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type CatalogDetail } from '../api'
 import { HeatLegend, TerritoryMap } from '../components/TerritoryMap'
-import { formatKm, formatLatLon } from '../geo'
+import { formatKm, formatLatLon, googleMapsUrl } from '../geo'
 import { regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
@@ -71,7 +71,11 @@ export function CatalogTerritory({ id, category }: Props) {
           <dl className="facts">
             <div>
               <dt>Center of mass</dt>
-              <dd>{formatLatLon(detail.trueCom)}</dd>
+              <dd>
+                <a href={googleMapsUrl(detail.trueCom)} target="_blank" rel="noreferrer" title="Open in Google Maps">
+                  {formatLatLon(detail.trueCom)}
+                </a>
+              </dd>
             </div>
             <div>
               <dt>Population</dt>

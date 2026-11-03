@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent } from 'react'
 import type { DensityGrid, LatLon, TerritoryShape } from '../api'
-import { createMapProjection, MAP_HEIGHT, MAP_WIDTH } from '../geo'
+import { createMapProjection, googleMapsUrl, MAP_HEIGHT, MAP_WIDTH } from '../geo'
 import { HEAT_STOPS, renderHeatmap } from '../heatmap'
 
 type Props = {
@@ -248,12 +248,24 @@ export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, o
           </g>
         )}
 
-        {comXY && (
-          <g transform={`translate(${comXY.x} ${comXY.y}) ${pinScale}`} aria-label="True center of mass">
-            <g className="pin pin-com">
-              <circle r="5" className="pin-core com" />
+        {comXY && trueCom && (
+          <a
+            href={googleMapsUrl(trueCom)}
+            target="_blank"
+            rel="noreferrer"
+            className="pin-link"
+            aria-label="True center of mass: open in Google Maps"
+            // Keep the map from capturing the pointer, which would swallow the click.
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <title>Open in Google Maps</title>
+            <g transform={`translate(${comXY.x} ${comXY.y}) ${pinScale}`}>
+              <g className="pin pin-com">
+                <circle r="12" className="pin-hit" />
+                <circle r="5" className="pin-core com" />
+              </g>
             </g>
-          </g>
+          </a>
         )}
       </svg>
 

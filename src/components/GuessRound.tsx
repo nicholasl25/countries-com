@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { api, type GuessResult, type LatLon, type Territory } from '../api'
-import { formatKm, formatLatLon } from '../geo'
+import { formatKm, formatLatLon, googleMapsUrl } from '../geo'
 import { HeatLegend, TerritoryMap } from './TerritoryMap'
 
 export type PlayedRound = { guess: LatLon; result: GuessResult }
@@ -129,7 +129,11 @@ export function GuessRound({
                 </svg>
                 True CoM:
               </dt>
-              <dd>{formatLatLon(played.result.trueCom, true)}</dd>
+              <dd>
+                <a href={googleMapsUrl(played.result.trueCom)} target="_blank" rel="noreferrer" title="Open in Google Maps">
+                  {formatLatLon(played.result.trueCom, true)}
+                </a>
+              </dd>
             </div>
             {played.result.sigmaKm && (
               <div>

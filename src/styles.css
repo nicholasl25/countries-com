@@ -405,6 +405,27 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+.board-summary a,
+.facts a {
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.board-summary a:hover,
+.facts a:hover {
+  color: var(--land);
+}
+
+.pin-link {
+  cursor: pointer;
+}
+
+.pin-hit {
+  fill: transparent;
+}
+
 .board-summary div:last-child dd {
   font-weight: 700;
 }
