@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api, type Catalog as CatalogData, type WorldMap } from '../api'
 import { RegionCard } from '../components/RegionCard'
-import { REGIONS, regionForCategory } from '../regions'
+import { REGIONS, SECTIONS, regionForCategory } from '../regions'
 import { routeHref } from '../router'
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
 export function Catalog({ category }: Props) {
   const [catalog, setCatalog] = useState<CatalogData | null>(null)
   const [world, setWorld] = useState<WorldMap | null>(null)
+  const [continents, setContinents] = useState<WorldMap | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export function Catalog({ category }: Props) {
       .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Something went wrong.'))
     // The previews are decoration; the catalog works without them.
     api.getWorld().then(setWorld, () => {})
+    api.getContinents().then(setContinents, () => {})
   }, [])
 
   const highlights = useMemo(
@@ -31,7 +33,8 @@ export function Catalog({ category }: Props) {
           new Set(
             catalog?.territories
               .filter((t) => t.categories.includes(r.category))
-              .flatMap((t) => (t.mapName ? [t.mapName] : [])),
+              // Continents are drawn from their own outlines, named like the territory.
+              .flatMap((t) => (r.category === 'Continents' ? [t.name] : t.mapName ? [t.mapName] : [])),
           ),
         ]),
       ),
@@ -61,17 +64,24 @@ export function Catalog({ category }: Props) {
     return (
       <div className="catalog rise">
         <p className="instruction">See where people live — and where the center of mass lands.</p>
-        <div className="region-grid">
-          {REGIONS.map((r) => (
-            <RegionCard
-              key={r.title}
-              region={r}
-              world={world}
-              count={inCategory(r.category).length}
-              highlight={highlights.get(r.category) ?? new Set()}
-            />
-          ))}
-        </div>
+        {SECTIONS.map((section) => (
+          <section key={section} className="catalog-section" aria-labelledby={`section-${section}`}>
+            <h2 className="catalog-section-title" id={`section-${section}`}>
+              {section}
+            </h2>
+            <div className="region-grid">
+              {REGIONS.filter((r) => r.section === section).map((r) => (
+                <RegionCard
+                  key={r.title}
+                  region={r}
+                  world={r.category === 'Continents' ? continents : world}
+                  count={inCategory(r.category).length}
+                  highlight={highlights.get(r.category) ?? new Set()}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     )
   }

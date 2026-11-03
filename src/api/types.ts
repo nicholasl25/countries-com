@@ -113,6 +113,8 @@ export interface GameApi {
   getCatalogDetail(id: string): Promise<CatalogDetail>
   /** Low-detail world map for catalog previews. */
   getWorld(): Promise<WorldMap>
+  /** Low-detail continent outlines for the Continents catalog preview. */
+  getContinents(): Promise<WorldMap>
   /** The daily game for a local calendar date (YYYY-MM-DD). */
   getDaily(date: string): Promise<DailyGame>
 }

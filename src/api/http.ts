@@ -21,6 +21,7 @@ import {
  *   GET  /catalog          -> Catalog
  *   GET  /catalog/{id}     -> CatalogDetail
  *   GET  /world            -> WorldMap
+ *   GET  /continents       -> WorldMap (continent outlines)
  *   GET  /daily?date=YYYY-MM-DD -> DailyGame
  *
  * Non-2xx responses may include `{ "error": "message" }`.
@@ -63,6 +64,7 @@ export function createHttpApi(baseUrl: string): GameApi {
     getCatalogDetail: (id: string) =>
       request<CatalogDetail>(`/catalog/${encodeURIComponent(id)}`),
     getWorld: () => request<WorldMap>('/world'),
+    getContinents: () => request<WorldMap>('/continents'),
     getDaily: (date: string) => request<DailyGame>(`/daily?date=${encodeURIComponent(date)}`),
   }
 }

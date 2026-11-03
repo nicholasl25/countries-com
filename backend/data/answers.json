@@ -1988,6 +1988,48 @@
       "population": 25168,
       "area_km2": 762,
       "sigma_km": 6.58
+    },
+    "continent-africa": {
+      "lat": 5.7812,
+      "lon": 20.1355,
+      "population": 1515263191,
+      "area_km2": 29942078,
+      "sigma_km": 1829.66
+    },
+    "continent-asia": {
+      "lat": 27.6255,
+      "lon": 93.3805,
+      "population": 4746452255,
+      "area_km2": 43552262,
+      "sigma_km": 1932.25
+    },
+    "continent-europe": {
+      "lat": 50.0566,
+      "lon": 15.3482,
+      "population": 699524455,
+      "area_km2": 10004795,
+      "sigma_km": 829.86
+    },
+    "continent-north-america": {
+      "lat": 31.9265,
+      "lon": -91.9846,
+      "population": 595546623,
+      "area_km2": 24154175,
+      "sigma_km": 1495.71
+    },
+    "continent-oceania": {
+      "lat": -22.5584,
+      "lon": 148.8509,
+      "population": 53289531,
+      "area_km2": 8948604,
+      "sigma_km": 1737.66
+    },
+    "continent-south-america": {
+      "lat": -14.2443,
+      "lon": -58.2852,
+      "population": 436356143,
+      "area_km2": 17751730,
+      "sigma_km": 1831.31
     }
   }
 }

@@ -31,7 +31,14 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape, get_world_preview
+from territories import (
+    CATEGORIES,
+    TERRITORIES,
+    TERRITORIES_BY_ID,
+    get_continents_preview,
+    get_shape,
+    get_world_preview,
+)
 
 EARTH_RADIUS_KM = 6371.0
 SCORE_K = math.log(2)
@@ -116,8 +123,10 @@ class GuessResult(BaseModel):
 
 @cache
 def load_density(territory_id: str) -> list[DensityGrid]:
-    grids = json.loads((DATA_DIR / "density" / f"{territory_id}.json").read_text())
-    return [DensityGrid.model_validate(g) for g in grids]
+    path = DATA_DIR / "density" / f"{territory_id}.json"
+    if not path.exists():
+        return []
+    return [DensityGrid.model_validate(g) for g in json.loads(path.read_text())]
 
 
 def distance_km(a: LatLon, b: LatLon) -> float:
@@ -162,7 +171,13 @@ def get_catalog() -> dict:
                 "name": t.name,
                 "region": t.region,
                 "categories": t.categories,
-                "mapName": t.atlas_name if t.source == "countries" else "United States of America",
+                "mapName": (
+                    t.atlas_name
+                    if t.source == "countries"
+                    else "United States of America"
+                    if t.source == "states"
+                    else None
+                ),
             }
             for t in sorted(PLAYABLE, key=lambda t: t.name)
         ],
@@ -172,6 +187,11 @@ def get_catalog() -> dict:
 @app.get("/api/world")
 def get_world() -> dict:
     return get_world_preview()
+
+
+@app.get("/api/continents")
+def get_continents() -> dict:
+    return get_continents_preview()
 
 
 @app.get("/api/catalog/{territory_id}")
