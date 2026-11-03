@@ -22,6 +22,12 @@ export function googleMapsUrl({ lat, lon }: LatLon): string {
   return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(4)},${lon.toFixed(4)}`
 }
 
+/** Opens Apple Maps with a pin at the point, labelled `label` (Google Maps
+ * links can't label a coordinate pin). */
+export function appleMapsUrl({ lat, lon }: LatLon, label: string): string {
+  return `https://maps.apple.com/?ll=${lat.toFixed(4)},${lon.toFixed(4)}&q=${encodeURIComponent(label)}`
+}
+
 /** e.g. "312 km", "4.2 km" */
 export function formatKm(km: number): string {
   return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km).toLocaleString('en-US')} km`

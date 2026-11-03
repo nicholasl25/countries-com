@@ -459,6 +459,7 @@ button {
 }
 
 .com-popup-link {
+  display: block;
   color: var(--land);
   font-weight: 600;
   text-decoration: none;

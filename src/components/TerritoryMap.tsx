@@ -1,11 +1,13 @@
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent } from 'react'
 import type { DensityGrid, LatLon, TerritoryShape } from '../api'
-import { createMapProjection, formatLatLon, googleMapsUrl, MAP_HEIGHT, MAP_WIDTH } from '../geo'
+import { appleMapsUrl, createMapProjection, formatLatLon, googleMapsUrl, MAP_HEIGHT, MAP_WIDTH } from '../geo'
 import { HEAT_STOPS, renderHeatmap } from '../heatmap'
 
 type Props = {
   shape: TerritoryShape
   label: string
+  /** Territory name, used to label the CoM pin in Apple Maps ("Australia CoM") */
+  placeName?: string
   /** Where the player clicked (black X) */
   guess?: LatLon | null
   /** The true center of mass (red dot) */
@@ -77,7 +79,9 @@ function toBoard(box: { width: number; height: number }, view: View, x: number, 
 }
 
 /** Details for the true CoM, anchored above the red dot (below it near the top edge). */
-function ComPopup({ point, left, top, onClose }: { point: LatLon; left: number; top: number; onClose: () => void }) {
+type ComPopupProps = { point: LatLon; placeName?: string; left: number; top: number; onClose: () => void }
+
+function ComPopup({ point, placeName, left, top, onClose }: ComPopupProps) {
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key === 'Escape') onClose()
@@ -96,12 +100,20 @@ function ComPopup({ point, left, top, onClose }: { point: LatLon; left: number; 
       <a className="com-popup-link" href={googleMapsUrl(point)} target="_blank" rel="noreferrer">
         Open in Google Maps ›
       </a>
+      <a
+        className="com-popup-link"
+        href={appleMapsUrl(point, placeName ? `${placeName} CoM` : 'Center of mass')}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Open in Apple Maps ›
+      </a>
     </div>
   )
 }
 
 /** Remount (with a `key`) to reset the zoom when showing a different territory. */
-export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, onPick }: Props) {
+export function TerritoryMap({ shape, label, placeName, guess, trueCom, sigmaKm, density, onPick }: Props) {
   const clipId = `land-${useId().replace(/:/g, '')}`
   const map = useMemo(() => createMapProjection(shape), [shape])
   const svgRef = useRef<SVGSVGElement>(null)
@@ -325,6 +337,7 @@ export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, o
       {comOpen && trueCom && comXY && svgSize && (
         <ComPopup
           point={trueCom}
+          placeName={placeName}
           {...toBoard(svgSize, view, comXY.x, comXY.y)}
           onClose={() => setComOpen(false)}
         />

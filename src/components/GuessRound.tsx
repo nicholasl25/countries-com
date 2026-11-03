@@ -102,6 +102,7 @@ export function GuessRound({
           <TerritoryMap
             key={territory.id}
             shape={territory.shape}
+            placeName={territory.name}
             label={`Map of ${territory.name}. Click to place your guess.`}
             guess={played?.guess ?? pending}
             trueCom={result?.trueCom ?? null}
