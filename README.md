@@ -83,7 +83,7 @@ To add or rename a country, edit `backend/data/countries.csv` (`atlas_name` must
 
 The offline step also finds each territory's **spread σ**, treating its population as a 2D normal distribution around the CoM: a 2D normal has 39.3% of its mass within 1σ, so σ is the distance from the CoM within which 39.3% of people live. Unlike a root-mean-square distance, a few far-off islands (France's overseas departments) can't inflate it. Rings at 1σ, 2σ and 3σ are drawn around the red dot after a guess.
 
-A guess `d` km from the CoM scores `1000 · e^(−ln4 · d / σ)`: 1000 on the dot and 4× fewer points per σ (250 at the 1σ ring, 63 at 2σ, 16 at 3σ). Judging distance by how spread out the people are, rather than by land area, keeps spread-out archipelagos (Kiribati, Hawaii) fair while still asking for precision where people are concentrated (the Bahamas around Nassau).
+A guess `d` km from the CoM scores `1000 · e^(−ln2 · d / σ)`: 1000 on the dot and 2× fewer points per σ (500 at the 1σ ring, 250 at 2σ, 125 at 3σ). Judging distance by how spread out the people are, rather than by land area, keeps spread-out archipelagos (Kiribati, Hawaii) fair while still asking for precision where people are concentrated (the Bahamas around Nassau).
 
 ## Stack
 

@@ -9,10 +9,10 @@ import type { LatLon, TerritoryShape } from './api'
 
 const KM_PER_DEGREE = (Math.PI * 6371) / 180
 
-/** e.g. "46.31° N, 2.69° E", or "46.3°N 2.7°E" when `compact` */
+/** e.g. "46.313° N, 2.691° E", or "46.31°N 2.69°E" when `compact` */
 export function formatLatLon({ lat, lon }: LatLon, compact = false): string {
   const part = (value: number, positive: string, negative: string) =>
-    `${Math.abs(value).toFixed(compact ? 1 : 2)}°${compact ? '' : ' '}${value >= 0 ? positive : negative}`
+    `${Math.abs(value).toFixed(compact ? 2 : 3)}°${compact ? '' : ' '}${value >= 0 ? positive : negative}`
   return `${part(lat, 'N', 'S')}${compact ? ' ' : ', '}${part(lon, 'E', 'W')}`
 }
 

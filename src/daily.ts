@@ -18,21 +18,22 @@ export function formatDay(date: string): string {
 }
 
 export function scoreEmoji(score: number): string {
-  if (score >= 950) return '🎯'
-  if (score >= 750) return '🟩'
-  if (score >= 500) return '🟨'
-  if (score >= 250) return '🟧'
-  return '🟥'
+  if (score >= 900) return '🎯'
+  if (score >= 750) return '🟢'
+  if (score >= 500) return '🟡'
+  if (score >= 250) return '🟠'
+  return '🔴'
 }
 
 /** Spoiler-free summary for pasting into messages. */
 export function shareText(game: DailyGame, played: PlayedRound[], url: string): string {
-  const scores = played.map((r) => r.result.score)
-  const total = scores.reduce((sum, s) => sum + s, 0)
+  const total = played.reduce((sum, r) => sum + r.result.score, 0)
+  const possible = game.rounds.length * MAX_ROUND_SCORE
   return [
-    `Countries.CoM Daily #${game.number} · ${formatDay(game.date)}`,
-    scores.map((s) => `${scoreEmoji(s)} ${s}`).join('  '),
-    `Total: ${total.toLocaleString('en-US')} / ${(game.rounds.length * MAX_ROUND_SCORE).toLocaleString('en-US')}`,
+    // U+2024 looks like a period but is not one, so "Countries.CoM" is not detected as a link.
+    `Countries\u2024CoM Day #${game.number}`,
+    ...played.map((r, i) => `Round #${i + 1}: ${r.result.score} ${scoreEmoji(r.result.score)}`),
+    `Total: ${total.toLocaleString('en-US')}/${possible.toLocaleString('en-US')}`,
     url,
   ].join('\n')
 }

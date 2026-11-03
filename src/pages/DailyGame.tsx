@@ -155,7 +155,7 @@ function DailySummary({ game, played, text, copied }: SummaryProps) {
           <textarea
             className="daily-share"
             readOnly
-            rows={4}
+            rows={played.length + 3}
             value={text}
             ref={(el) => el?.select()}
             onFocus={(e) => e.currentTarget.select()}

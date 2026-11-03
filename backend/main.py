@@ -34,7 +34,7 @@ from pydantic import BaseModel, Field
 from territories import CATEGORIES, TERRITORIES, TERRITORIES_BY_ID, get_shape, get_world_preview
 
 EARTH_RADIUS_KM = 6371.0
-SCORE_K = math.log(4)
+SCORE_K = math.log(2)
 DATA_DIR = Path(__file__).parent / "data"
 # Built frontend. Locally this is the repo's dist/; the image sets STATIC_DIR.
 DIST_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parent.parent / "dist"))
@@ -129,8 +129,8 @@ def distance_km(a: LatLon, b: LatLon) -> float:
 
 def score(distance: float, sigma_km: float) -> int:
     """0–1000, judged relative to how spread out the territory's people are
-    (σ): 1000 on the dot, and 4× fewer points per σ of distance — 250 at 1σ,
-    63 at 2σ, 16 at 3σ."""
+    (σ): 1000 on the dot, and 2× fewer points per σ of distance — 500 at 1σ,
+    250 at 2σ, 125 at 3σ."""
     return max(0, round(1000 * math.exp(-SCORE_K * distance / sigma_km)))
 
 
