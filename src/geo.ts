@@ -16,9 +16,10 @@ export function formatLatLon({ lat, lon }: LatLon, compact = false): string {
   return `${part(lat, 'N', 'S')}${compact ? ' ' : ', '}${part(lon, 'E', 'W')}`
 }
 
-/** Opens Google Maps with a pin at the point (it shows the nearest address or place). */
+/** Opens Google Maps with a pin at the point (it shows the nearest address or
+ * place). 4 decimals is ~11 m, the precision answers are stored at. */
 export function googleMapsUrl({ lat, lon }: LatLon): string {
-  return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(5)},${lon.toFixed(5)}`
+  return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(4)},${lon.toFixed(4)}`
 }
 
 /** e.g. "312 km", "4.2 km" */

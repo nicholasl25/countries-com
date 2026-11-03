@@ -405,21 +405,66 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-.board-summary a,
-.facts a {
-  pointer-events: auto;
-  color: inherit;
-  text-decoration: underline dotted;
-  text-underline-offset: 2px;
-}
-
-.board-summary a:hover,
-.facts a:hover {
-  color: var(--land);
-}
-
 .pin-link {
   cursor: pointer;
+  outline: none;
+}
+
+.pin-link:focus-visible .pin-hit {
+  stroke: var(--com);
+  stroke-width: 2;
+}
+
+.com-popup {
+  position: absolute;
+  z-index: 2;
+  min-width: 11rem;
+  padding: 0.55rem 0.75rem 0.6rem;
+  border: 2px solid #000;
+  background: #fff;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  font-size: 0.85rem;
+  transform: translate(-50%, calc(-100% - 14px));
+  animation: fade-in 160ms ease both;
+}
+
+.com-popup.is-below {
+  transform: translate(-50%, 14px);
+}
+
+.com-popup-close {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.3rem;
+  appearance: none;
+  border: 0;
+  background: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+
+.com-popup-title {
+  margin: 0 1.2rem 0.15rem 0;
+  font-family: var(--font-brand);
+  font-size: 1rem;
+}
+
+.com-popup-coords {
+  margin: 0 0 0.45rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.com-popup-link {
+  color: var(--land);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.com-popup-link:hover {
+  text-decoration: underline;
 }
 
 .pin-hit {

@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent } from 'react'
 import type { DensityGrid, LatLon, TerritoryShape } from '../api'
-import { createMapProjection, googleMapsUrl, MAP_HEIGHT, MAP_WIDTH } from '../geo'
+import { createMapProjection, formatLatLon, googleMapsUrl, MAP_HEIGHT, MAP_WIDTH } from '../geo'
 import { HEAT_STOPS, renderHeatmap } from '../heatmap'
 
 type Props = {
@@ -66,6 +66,40 @@ function toMap(svg: SVGSVGElement, view: View, clientX: number, clientY: number)
   }
 }
 
+/** Map units to pixels from the top-left corner of an SVG of size `box`. */
+function toBoard(box: { width: number; height: number }, view: View, x: number, y: number) {
+  const rect = viewRect(view)
+  const scale = Math.min(box.width / rect.width, box.height / rect.height)
+  return {
+    left: (box.width - rect.width * scale) / 2 + (x - rect.x) * scale,
+    top: (box.height - rect.height * scale) / 2 + (y - rect.y) * scale,
+  }
+}
+
+/** Details for the true CoM, anchored above the red dot (below it near the top edge). */
+function ComPopup({ point, left, top, onClose }: { point: LatLon; left: number; top: number; onClose: () => void }) {
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div className={`com-popup${top < 120 ? ' is-below' : ''}`} style={{ left, top }} role="dialog" aria-label="True center of mass">
+      <button type="button" className="com-popup-close" aria-label="Close" onClick={onClose}>
+        ×
+      </button>
+      <p className="com-popup-title">True center of mass</p>
+      <p className="com-popup-coords">{formatLatLon(point)}</p>
+      <a className="com-popup-link" href={googleMapsUrl(point)} target="_blank" rel="noreferrer">
+        Open in Google Maps ›
+      </a>
+    </div>
+  )
+}
+
 /** Remount (with a `key`) to reset the zoom when showing a different territory. */
 export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, onPick }: Props) {
   const clipId = `land-${useId().replace(/:/g, '')}`
@@ -82,6 +116,18 @@ export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, o
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const press = useRef({ moved: false, startX: 0, startY: 0 })
   const [panning, setPanning] = useState(false)
+  const [comOpen, setComOpen] = useState(false)
+  const [svgSize, setSvgSize] = useState<{ width: number; height: number } | null>(null)
+
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg) return
+    const observer = new ResizeObserver(([entry]) => {
+      setSvgSize({ width: entry.contentRect.width, height: entry.contentRect.height })
+    })
+    observer.observe(svg)
+    return () => observer.disconnect()
+  }, [])
 
   const heatmap = useMemo(() => (density ? renderHeatmap(map, density, HEATMAP_SCALE) : null), [map, density])
   const rings = useMemo(
@@ -110,6 +156,7 @@ export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, o
 
   function onPointerDown(event: PointerEvent<SVGSVGElement>) {
     if (event.pointerType === 'mouse' && event.button !== 0) return
+    setComOpen(false)
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
     if (pointers.current.size === 1) {
       press.current = { moved: false, startX: event.clientX, startY: event.clientY }
@@ -249,25 +296,39 @@ export function TerritoryMap({ shape, label, guess, trueCom, sigmaKm, density, o
         )}
 
         {comXY && trueCom && (
-          <a
-            href={googleMapsUrl(trueCom)}
-            target="_blank"
-            rel="noreferrer"
+          <g
             className="pin-link"
-            aria-label="True center of mass: open in Google Maps"
+            role="button"
+            tabIndex={0}
+            aria-label="True center of mass: show details"
+            aria-expanded={comOpen}
             // Keep the map from capturing the pointer, which would swallow the click.
             onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => setComOpen((open) => !open)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setComOpen((open) => !open)
+              }
+            }}
           >
-            <title>Open in Google Maps</title>
             <g transform={`translate(${comXY.x} ${comXY.y}) ${pinScale}`}>
               <g className="pin pin-com">
                 <circle r="12" className="pin-hit" />
                 <circle r="5" className="pin-core com" />
               </g>
             </g>
-          </a>
+          </g>
         )}
       </svg>
+
+      {comOpen && trueCom && comXY && svgSize && (
+        <ComPopup
+          point={trueCom}
+          {...toBoard(svgSize, view, comXY.x, comXY.y)}
+          onClose={() => setComOpen(false)}
+        />
+      )}
 
       <div className="map-zoom">
         <button type="button" aria-label="Zoom in" title="Zoom in (or scroll / pinch)" onClick={() => zoomBy(2)}>
